@@ -1,22 +1,22 @@
 @page "/add-entry"
 @using ApplicationDevelopment.Model
 @using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
 
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Create Journal Entry</h2>
-        <button type="submit" form="journalForm" class="btn btn-success btn-lg shadow-sm">Save</button>
-    </div>
+<div class="entry-page">
+    <div class="entry-card shadow-sm">
+        <div class="card-header">
+            <h2>Create Journal Entry</h2>
+        </div>
 
-    <EditForm id="journalForm" Model="@_newEntry" OnValidSubmit="HandleSaveAsync">
-        <DataAnnotationsValidator />
-        <ValidationSummary class="text-danger mb-3" />
+        <EditForm Model="@_newEntry" OnValidSubmit="HandleSaveAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger mb-2" />
 
-        <div class="card p-4 shadow-sm rounded-3 bg-light mb-4">
-            <div class="row g-3">
-                <div class="col-md-2">
-                    <label class="form-label fw-semibold">Primary Mood</label>
-                    <InputSelect @bind-Value="_newEntry.PrimaryMood" class="form-select">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Primary Mood</label>
+                    <InputSelect @bind-Value="_newEntry.PrimaryMood" class="mood-select primary">
                         <option value="">-- Select --</option>
                         <option value="Happy">Happy</option>
                         <option value="Calm">Calm</option>
@@ -25,100 +25,170 @@
                     </InputSelect>
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label text-muted fw-semibold">Secondary Mood</label>
-                    <InputSelect @bind-Value="_newEntry.SecondaryMood" class="form-select">
+                <div class="form-group">
+                    <label>Secondary Mood</label>
+                    <InputSelect @bind-Value="_newEntry.SecondaryMood" class="mood-select secondary">
                         <option value="">None</option>
                         <option value="Excited">Excited</option>
                         <option value="Tired">Tired</option>
                         <option value="Grateful">Grateful</option>
                     </InputSelect>
                 </div>
+            </div>
 
-                <div class="col-md-8">
-                    <label class="form-label fw-semibold">Tags</label>
-                    <div class="d-flex gap-2 flex-wrap align-items-center">
-                        <div class="input-group input-group-sm flex-grow-1">
-                            <InputText @bind-Value="_newEntry.CurrentTagInput" class="form-control" placeholder="Add a tag..." />
-                            <button type="button" class="btn btn-primary" @onclick="AddTagAsync">Add</button>
-                        </div>
-
-                        @foreach (var tag in _newEntry.Tags)
-                        {
-                            <span class="badge bg-info text-dark rounded-pill">
-                                #@tag
-                            </span>
-                        }
-                    </div>
+            <div class="form-group tags-group">
+                <label>Add Tags</label>
+                <div class="tag-input">
+                    <InputText @bind-Value="_newEntry.CurrentTagInput" placeholder="e.g. Work, Travel" />
+                    <button type="button" class="btn btn-add" @onclick="AddTag">Add</button>
+                </div>
+                <div class="tag-list">
+                    @foreach (var tag in _newEntry.Tags)
+                    {
+                        <span class="tag-badge">@tag</span>
+                    }
                 </div>
             </div>
-        </div>
 
-        <div class="editor-container shadow-sm rounded-3 p-4 bg-white">
-            <InputTextArea @bind-Value="_newEntry.Content"
-                           class="word-textarea"
-                           placeholder="Write your story here..." />
-        </div>
-    </EditForm>
+            <div class="form-group">
+                <label>Journal Content</label>
+                <InputTextArea @bind-Value="_newEntry.Content" class="content-area" placeholder="Write your story..." />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">Save Entry</button>
+            </div>
+        </EditForm>
+    </div>
 </div>
 
 <style>
-    .editor-container {
-        min-height: 60vh;
-        max-width: 900px;
-        margin: 0 auto;
-        border: 1px solid #dee2e6;
-    }
+.entry-page {
+    display: flex;
+    justify-content: center;
+    margin: 2rem auto;
+}
 
-    .word-textarea {
-        width: 100%;
-        min-height: 50vh;
-        border: none;
-        outline: none;
-        resize: none;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 1.1rem;
-        line-height: 1.6;
-        padding: 0.5rem;
-    }
+.entry-card {
+    width: 100%;
+    max-width: 700px;
+    background: #fefefe;
+    border-radius: 1rem;
+    overflow: hidden;
+}
 
-    .form-label {
-        font-size: 0.95rem;
-    }
+.card-header {
+    background: linear-gradient(120deg,#5D3AEE,#A56EFF);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+}
 
-    .badge {
-        font-size: 0.85rem;
-        padding: 0.45em 0.8em;
-    }
+.form-row {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+}
 
-    button.btn-primary {
-        transition: all 0.2s ease-in-out;
-    }
-    button.btn-primary:hover {
-        background-color: #0b5ed7;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-    }
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4a3f9d;
+}
+
+.mood-select {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.tags-group {
+    padding: 0 1rem;
+}
+
+.tag-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-add {
+    background: #5D3AEE;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.tag-list {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.tag-badge {
+    background: #dcd7f7;
+    color: #5D3AEE;
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+}
+
+.content-area {
+    width: 100%;
+    min-height: 200px;
+    border-radius: 0.75rem;
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    font-size: 1rem;
+    resize: vertical;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.form-actions {
+    padding: 1rem;
+    text-align: center;
+}
+
+.btn-save {
+    background: linear-gradient(120deg,#5D3AEE,#A56EFF);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.btn-save:hover {
+    opacity: 0.9;
+}
 </style>
 
 @code {
     private JournalEntry _newEntry = new JournalEntry();
 
-    #pragma warning disable IDE0051
-    private Task AddTagAsync()
+    private void AddTag()
     {
         if (!string.IsNullOrWhiteSpace(_newEntry.CurrentTagInput))
         {
             _newEntry.Tags.Add(_newEntry.CurrentTagInput);
-            _newEntry.CurrentTagInput = ""; 
+            _newEntry.CurrentTagInput = "";
         }
-        return Task.CompletedTask;
     }
 
-    private Task HandleSaveAsync()
+    private void HandleSaveAsync()
     {
         JournalService.AddEntry(_newEntry);
         _newEntry = new JournalEntry();
-        return Task.CompletedTask;
+        NavManager.NavigateTo("/history");
     }
-    #pragma warning restore IDE0051
 }

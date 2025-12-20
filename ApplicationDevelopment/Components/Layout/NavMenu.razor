@@ -1,10 +1,79 @@
-﻿<div class="nav-item px-3">
-    <NavLink class="nav-link" href="add-entry">
-        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add Entry
-    </NavLink>
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+
+<div class="app-container">
+    <!-- Vertical Navbar -->
+    <div class="vertical-navbar">
+        <h4 class="nav-title">My Journal</h4>
+        <a href="/add-entry" class="nav-link @(NavManager.Uri.EndsWith("/add-entry") ? "active" : "")">Add Entry</a>
+        <a href="/history" class="nav-link @(NavManager.Uri.EndsWith("/history") ? "active" : "")">History</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        @Body
+    </div>
 </div>
-<div class="nav-item px-3">
-    <NavLink class="nav-link" href="history">
-        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> History
-    </NavLink>
-</div>
+
+<style>
+    /* Container */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Vertical Navbar */
+    .vertical-navbar {
+        width: 220px;
+        background: linear-gradient(180deg, #89CFF0, #00B4D8);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 2rem;
+        box-shadow: 3px 0 8px rgba(0,0,0,0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0; /* ensures full height */
+        z-index: 1000;
+    }
+
+    .nav-title {
+        color: #ffffff;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .nav-link {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 0.8rem 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        width: 90%;
+        text-align: center;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .nav-link:hover {
+        background: rgba(255,255,255,0.2);
+        transform: scale(1.05);
+    }
+
+    .nav-link.active {
+        background: rgba(255,255,255,0.4);
+        color: #023E8A;
+    }
+
+    /* Main content */
+    .main-content {
+        margin-left: 220px; /* same as navbar width */
+        padding: 2rem;
+        width: calc(100% - 220px);
+        background-color: #f0f8ff; /* consistent light background */
+        min-height: 100vh;
+    }
+</style>

@@ -348,3 +348,4 @@
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/ApplicationDevelopment.pdb
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/ApplicationDevelopment.genruntimeconfig.cache
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/ref/ApplicationDevelopment.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/ApplicationDevelopment.sourcelink.json
