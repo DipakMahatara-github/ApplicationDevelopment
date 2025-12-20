@@ -9,7 +9,11 @@
             <h2>Edit Journal Entry</h2>
         </div>
 
-        @if (_entryToEdit != null)
+        @if (_entryToEdit == null)
+        {
+            <p class="text-center mt-4">Entry not found.</p>
+        }
+        else
         {
             <EditForm Model="@_entryToEdit" OnValidSubmit="HandleUpdateAsync">
                 <DataAnnotationsValidator />
@@ -39,15 +43,18 @@
                 </div>
 
                 <div class="form-group tags-group">
-                    <label>Edit Tags</label>
+                    <label>Tags</label>
                     <div class="tag-input">
-                        <InputText @bind-Value="_entryToEdit.CurrentTagInput" placeholder="Add new tag" />
+                        <InputText @bind-Value="_entryToEdit.CurrentTagInput" placeholder="Add a tag..." />
                         <button type="button" class="btn btn-add" @onclick="AddTag">Add</button>
                     </div>
                     <div class="tag-list">
                         @foreach (var tag in _entryToEdit.Tags)
                         {
-                            <span class="tag-badge">@tag <span class="remove-tag" @onclick="() => RemoveTag(tag)">×</span></span>
+                            <span class="tag-badge">
+                                @tag
+                                <span style="cursor:pointer; margin-left:4px;" @onclick="() => RemoveTag(tag)">×</span>
+                            </span>
                         }
                     </div>
                 </div>
@@ -59,13 +66,9 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-save">Update Entry</button>
-                    <button type="button" class="btn btn-cancel" @onclick="CancelAsync">Cancel</button>
+                    <button type="button" class="btn btn-cancel" @onclick="Cancel">Cancel</button>
                 </div>
             </EditForm>
-        }
-        else
-        {
-            <p class="text-center text-muted p-4">Entry not found.</p>
         }
     </div>
 </div>
@@ -80,17 +83,19 @@
 .entry-card {
     width: 100%;
     max-width: 700px;
-    background: #fefefe;
+    background: #f0f8ff;
     border-radius: 1rem;
     overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .card-header {
-    background: linear-gradient(120deg,#5D3AEE,#A56EFF); /* MATCH AddEntry */
+    background: linear-gradient(120deg, #00B4D8, #48CAE4);
     color: white;
     padding: 1.5rem;
     text-align: center;
     font-weight: 600;
+    font-size: 1.6rem;
 }
 
 .form-row {
@@ -109,7 +114,7 @@
 label {
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #4a3f9d;
+    color: #0077B6;
 }
 
 .mood-select {
@@ -128,7 +133,7 @@ label {
 }
 
 .btn-add {
-    background: #5D3AEE; /* MATCH AddEntry */
+    background: #00B4D8;
     color: white;
     border: none;
     border-radius: 0.5rem;
@@ -143,18 +148,11 @@ label {
 }
 
 .tag-badge {
-    background: #dcd7f7; /* MATCH AddEntry */
-    color: #5D3AEE; /* MATCH AddEntry */
+    background: #ade8f4;
+    color: #0077B6;
     padding: 0.3rem 0.7rem;
     border-radius: 1rem;
     font-size: 0.85rem;
-}
-
-.remove-tag {
-    cursor: pointer;
-    margin-left: 0.3rem;
-    font-weight: 600;
-    color: #fff;
 }
 
 .content-area {
@@ -171,16 +169,20 @@ label {
 .form-actions {
     padding: 1rem;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
 }
 
 .btn-save {
-    background: linear-gradient(120deg,#5D3AEE,#A56EFF); /* MATCH AddEntry */
+    background: linear-gradient(120deg, #00B4D8, #48CAE4);
     color: white;
     border: none;
     padding: 0.6rem 1.5rem;
     border-radius: 0.75rem;
     font-weight: 600;
     font-size: 1rem;
+    transition: 0.3s;
 }
 
 .btn-save:hover {
@@ -188,11 +190,12 @@ label {
 }
 
 .btn-cancel {
-    background: #ccc;
-    color: #333;
+    background: #adb5bd;
+    color: white;
+    border: none;
     padding: 0.6rem 1.5rem;
     border-radius: 0.75rem;
-    margin-left: 1rem;
+    font-weight: 600;
 }
 </style>
 
@@ -209,7 +212,7 @@ label {
     {
         if (!string.IsNullOrWhiteSpace(_entryToEdit?.CurrentTagInput))
         {
-            _entryToEdit.Tags.Add(_entryToEdit.CurrentTagInput);
+            _entryToEdit.Tags.Add(_entryToEdit.CurrentTagInput!);
             _entryToEdit.CurrentTagInput = "";
         }
     }
@@ -221,10 +224,11 @@ label {
 
     private void HandleUpdateAsync()
     {
+        JournalService.UpdateEntry(_entryToEdit!);
         NavManager.NavigateTo("/history");
     }
 
-    private void CancelAsync()
+    private void Cancel()
     {
         NavManager.NavigateTo("/history");
     }

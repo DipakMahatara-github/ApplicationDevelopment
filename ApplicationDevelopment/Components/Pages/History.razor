@@ -3,165 +3,90 @@
 @using ApplicationDevelopment.Service
 @inject NavigationManager NavManager
 
-<div class="history-page">
-
-    <div class="history-header">
-        <h2>Journal History</h2>
-        <input type="text" class="search-box" placeholder="Search content or #tags..." 
-               @bind="_searchText" @bind:event="oninput" />
+<div class="history-container">
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6"><h3>Journal History</h3></div>
+        <div class="col-md-6">
+            <input type="text" class="form-control search-input" placeholder="Search content or #tags..." 
+                   @bind="_searchText" @bind:event="oninput" />
+        </div>
     </div>
 
-    <div class="history-list">
-        @if (GetFilteredEntries().Count == 0)
-        {
-            <p class="text-center text-muted mt-5">No entries found.</p>
-        }
-        else
-        {
+    <hr />
+
+    @if (GetFilteredEntries().Count == 0)
+    {
+        <p class="text-center text-muted mt-5">No entries found.</p>
+    }
+    else
+    {
+        <div class="history-list">
             @foreach (var item in GetFilteredEntries())
             {
-                <div class="history-card shadow-sm">
-                    <div class="card-header">
-                        <small>@item.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
-                        <div class="action-buttons">
-                            <button class="btn btn-edit" @onclick="() => Edit(item.Id)">Edit</button>
-                            <button class="btn btn-delete" @onclick="() => Delete(item.Id)">Delete</button>
-                        </div>
-                    </div>
+                <div class="card history-card">
                     <div class="card-body">
-                        <p class="entry-content">@item.Content</p>
-                        <p class="entry-mood"><strong>Mood:</strong> @item.PrimaryMood @(string.IsNullOrEmpty(item.SecondaryMood) ? "" : " / " + item.SecondaryMood)</p>
-                        <div class="tag-container">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => Edit(item.Id)">
+                                    Edit
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Delete(item.Id)">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        <p class="mt-2 lead">@item.Content</p>
+                        <p class="mb-2"><strong>Mood:</strong> @item.PrimaryMood @(string.IsNullOrEmpty(item.SecondaryMood) ? "" : " / " + item.SecondaryMood)</p>
+                        <div>
                             @foreach (var t in item.Tags)
                             {
-                                <span class="tag-badge">#@t</span>
+                                <span class="badge tag-badge">#@t</span>
                             }
                         </div>
                     </div>
                 </div>
             }
-        }
-    </div>
+        </div>
+    }
 </div>
 
 <style>
-/* Page background */
-.history-page {
+.history-container {
+    background-color: #E6F2FF; /* Soft light blue to match navbar */
     min-height: 100vh;
-    background: #f5f4ff; /* light lavender */
-    padding: 2rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 2rem;
 }
 
-/* Header */
-.history-header {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.history-header h2 {
-    color: #4a3f9d;
-}
-
-.search-box {
-    padding: 0.5rem 1rem;
-    border-radius: 0.75rem;
-    border: 1px solid #ccc;
-    width: 50%;
-}
-
-/* Card */
-.history-list {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.history-card {
-    background: #fff;
-    border-radius: 1rem;
-    overflow: hidden;
-    border-left: 6px solid #5D3AEE;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-/* Card header */
-.history-card .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(120deg,#5D3AEE,#A56EFF);
-    color: white;
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-}
-
-/* Action buttons */
-.action-buttons button {
-    margin-left: 0.5rem;
-    padding: 0.3rem 0.6rem;
+/* Search input */
+.search-input {
     border-radius: 0.5rem;
+    border: 1px solid #00B4D8;
+}
+
+/* History card */
+.history-card {
     border: none;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
+    border-left: 5px solid #00B4D8; /* match navbar gradient end color */
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    background-color: #ffffff; /* card white for contrast */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
 }
 
-.btn-edit {
-    background: #ffdd57;
-    color: #333;
+.history-card:hover {
+    transform: translateY(-3px);
 }
 
-.btn-edit:hover {
-    opacity: 0.9;
-}
-
-.btn-delete {
-    background: #ff6b6b;
-    color: white;
-}
-
-.btn-delete:hover {
-    opacity: 0.9;
-}
-
-/* Card body */
-.card-body {
-    padding: 1rem;
-}
-
-.entry-content {
-    font-size: 1rem;
-    line-height: 1.5;
-    margin-bottom: 0.5rem;
-}
-
-.entry-mood {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 0.5rem;
-}
-
-/* Tags */
-.tag-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
+/* Tag badge */
 .tag-badge {
-    background: #dcd7f7;
-    color: #5D3AEE;
-    padding: 0.3rem 0.7rem;
-    border-radius: 1rem;
+    background-color: #00B4D8; /* match navbar gradient */
+    color: #fff;
+    margin-right: 0.3rem;
+    margin-bottom: 0.2rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.4rem;
     font-size: 0.85rem;
 }
 </style>
@@ -175,9 +100,8 @@
             return JournalService.AllEntries;
 
         return JournalService.AllEntries.FindAll(x => 
-            (!string.IsNullOrEmpty(x.Content) && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
-            x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase))
-        );
+            (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) || 
+            x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
     }
 
     private void Edit(Guid id)
