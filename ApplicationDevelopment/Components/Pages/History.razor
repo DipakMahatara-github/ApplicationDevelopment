@@ -1,0 +1,72 @@
+@page "/history"
+@using ApplicationDevelopment.Model
+@using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
+
+<div class="p-3">
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6"><h3>Journal History</h3></div>
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Search content or #tags..." 
+                   @bind="_searchText" @bind:event="oninput" />
+        </div>
+    </div>
+
+    <hr />
+
+    @if (GetFilteredEntries().Count == 0)
+    {
+        <p class="text-center text-muted mt-5">No entries found.</p>
+    }
+    else
+    {
+        @foreach (var item in GetFilteredEntries())
+        {
+            <div class="card mb-3 border-0 shadow-sm border-start border-primary border-5">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-2" @onclick="@(() => EditAsync(item.Id))">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger" @onclick="@(() => DeleteAsync(item.Id))">Delete</button>
+                        </div>
+                    </div>
+                    <p class="mt-2 lead">@item.Content</p>
+                    <p class="mb-2"><strong>Mood:</strong> @item.PrimaryMood @(string.IsNullOrEmpty(item.SecondaryMood) ? "" : " / " + item.SecondaryMood)</p>
+                    <div>
+                        @foreach (var t in item.Tags)
+                        {
+                            <span class="badge bg-light text-dark border me-1">#@t</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private string _searchText = "";
+
+    private List<JournalEntry> GetFilteredEntries()
+    {
+        if (string.IsNullOrWhiteSpace(_searchText))
+            return JournalService.AllEntries;
+
+        return JournalService.AllEntries.FindAll(x => 
+            (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) || 
+            x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private Task EditAsync(Guid id)
+    {
+        NavManager.NavigateTo($"/edit-entry/{id}");
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteAsync(Guid id)
+    {
+        JournalService.DeleteEntry(id);
+        return Task.CompletedTask;
+    }
+}

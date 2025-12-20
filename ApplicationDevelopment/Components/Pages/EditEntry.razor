@@ -1,0 +1,164 @@
+@page "/edit-entry/{Id:guid}"
+@using ApplicationDevelopment.Model
+@using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Edit Journal Entry</h2>
+        <div>
+            <button type="button" class="btn btn-light shadow-sm me-2" @onclick="CancelAsync">Cancel</button>
+            <button type="submit" form="editForm" class="btn btn-primary shadow-sm">Update</button>
+        </div>
+    </div>
+
+    @if (_entryToEdit == null)
+    {
+        <p class="text-muted">Entry not found.</p>
+    }
+    else
+    {
+        <EditForm id="editForm" Model="@_entryToEdit" OnValidSubmit="HandleUpdateAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger mb-3" />
+
+            <div class="card p-4 shadow-sm rounded-3 bg-light mb-4">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Primary Mood</label>
+                        <InputSelect @bind-Value="_entryToEdit.PrimaryMood" class="form-select">
+                            <option value="">-- Select --</option>
+                            <option value="Happy">Happy</option>
+                            <option value="Calm">Calm</option>
+                            <option value="Sad">Sad</option>
+                            <option value="Angry">Angry</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label text-muted fw-semibold">Secondary Mood</label>
+                        <InputSelect @bind-Value="_entryToEdit.SecondaryMood" class="form-select">
+                            <option value="">None</option>
+                            <option value="Excited">Excited</option>
+                            <option value="Tired">Tired</option>
+                            <option value="Grateful">Grateful</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">Tags</label>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <div class="input-group input-group-sm flex-grow-1">
+                                <InputText @bind-Value="_entryToEdit.CurrentTagInput" class="form-control" placeholder="Add a tag..." />
+                                <button type="button" class="btn btn-primary" @onclick="AddTagAsync">Add</button>
+                            </div>
+
+                            @foreach (var tag in _entryToEdit.Tags)
+                            {
+                                <span class="badge bg-info text-dark rounded-pill">
+                                    #@tag
+                                    <span style="cursor:pointer" @onclick="() => RemoveTagAsync(tag)">×</span>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-container shadow-sm rounded-3 p-4 bg-white">
+                <InputTextArea @bind-Value="_entryToEdit.Content" class="word-textarea" />
+            </div>
+        </EditForm>
+    }
+</div>
+
+<style>
+    .editor-container {
+        min-height: 60vh;
+        max-width: 900px;
+        margin: 0 auto;
+        border: 1px solid #dee2e6;
+    }
+
+    .word-textarea {
+        width: 100%;
+        min-height: 50vh;
+        border: none;
+        outline: none;
+        resize: none;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        padding: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.45em 0.8em;
+        cursor: default;
+    }
+
+    .badge span {
+        cursor: pointer;
+        margin-left: 0.3rem;
+    }
+
+    button.btn-primary {
+        transition: all 0.2s ease-in-out;
+    }
+    button.btn-primary:hover {
+        background-color: #0b5ed7;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    button.btn-light {
+        transition: all 0.2s ease-in-out;
+    }
+    button.btn-light:hover {
+        background-color: #f1f3f5;
+    }
+</style>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    private JournalEntry? _entryToEdit;
+
+    protected override void OnInitialized()
+    {
+        _entryToEdit = JournalService.GetEntryById(Id);
+    }
+
+    #pragma warning disable IDE0051
+    private Task AddTagAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_entryToEdit?.CurrentTagInput))
+        {
+            _entryToEdit.Tags.Add(_entryToEdit.CurrentTagInput!);
+            _entryToEdit.CurrentTagInput = "";
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveTagAsync(string tag)
+    {
+        _entryToEdit?.Tags.Remove(tag);
+        return Task.CompletedTask;
+    }
+
+    private Task HandleUpdateAsync()
+    {
+        NavManager.NavigateTo("history");
+        return Task.CompletedTask;
+    }
+
+    private Task CancelAsync()
+    {
+        NavManager.NavigateTo("history");
+        return Task.CompletedTask;
+    }
+    #pragma warning restore IDE0051
+}

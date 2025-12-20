@@ -1,0 +1,124 @@
+@page "/add-entry"
+@using ApplicationDevelopment.Model
+@using ApplicationDevelopment.Service
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Create Journal Entry</h2>
+        <button type="submit" form="journalForm" class="btn btn-success btn-lg shadow-sm">Save</button>
+    </div>
+
+    <EditForm id="journalForm" Model="@_newEntry" OnValidSubmit="HandleSaveAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger mb-3" />
+
+        <div class="card p-4 shadow-sm rounded-3 bg-light mb-4">
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Primary Mood</label>
+                    <InputSelect @bind-Value="_newEntry.PrimaryMood" class="form-select">
+                        <option value="">-- Select --</option>
+                        <option value="Happy">Happy</option>
+                        <option value="Calm">Calm</option>
+                        <option value="Sad">Sad</option>
+                        <option value="Angry">Angry</option>
+                    </InputSelect>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-semibold">Secondary Mood</label>
+                    <InputSelect @bind-Value="_newEntry.SecondaryMood" class="form-select">
+                        <option value="">None</option>
+                        <option value="Excited">Excited</option>
+                        <option value="Tired">Tired</option>
+                        <option value="Grateful">Grateful</option>
+                    </InputSelect>
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Tags</label>
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        <div class="input-group input-group-sm flex-grow-1">
+                            <InputText @bind-Value="_newEntry.CurrentTagInput" class="form-control" placeholder="Add a tag..." />
+                            <button type="button" class="btn btn-primary" @onclick="AddTagAsync">Add</button>
+                        </div>
+
+                        @foreach (var tag in _newEntry.Tags)
+                        {
+                            <span class="badge bg-info text-dark rounded-pill">
+                                #@tag
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-container shadow-sm rounded-3 p-4 bg-white">
+            <InputTextArea @bind-Value="_newEntry.Content"
+                           class="word-textarea"
+                           placeholder="Write your story here..." />
+        </div>
+    </EditForm>
+</div>
+
+<style>
+    .editor-container {
+        min-height: 60vh;
+        max-width: 900px;
+        margin: 0 auto;
+        border: 1px solid #dee2e6;
+    }
+
+    .word-textarea {
+        width: 100%;
+        min-height: 50vh;
+        border: none;
+        outline: none;
+        resize: none;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        padding: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.45em 0.8em;
+    }
+
+    button.btn-primary {
+        transition: all 0.2s ease-in-out;
+    }
+    button.btn-primary:hover {
+        background-color: #0b5ed7;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+</style>
+
+@code {
+    private JournalEntry _newEntry = new JournalEntry();
+
+    #pragma warning disable IDE0051
+    private Task AddTagAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_newEntry.CurrentTagInput))
+        {
+            _newEntry.Tags.Add(_newEntry.CurrentTagInput);
+            _newEntry.CurrentTagInput = ""; 
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSaveAsync()
+    {
+        JournalService.AddEntry(_newEntry);
+        _newEntry = new JournalEntry();
+        return Task.CompletedTask;
+    }
+    #pragma warning restore IDE0051
+}
