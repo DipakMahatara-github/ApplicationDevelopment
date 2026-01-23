@@ -3,233 +3,29 @@
 @using ApplicationDevelopment.Service
 @inject NavigationManager NavManager
 
-<div class="entry-page">
-    <div class="entry-card shadow-sm">
-        <div class="card-header">
-            <h2>Edit Journal Entry</h2>
-        </div>
-
-        @if (_entryToEdit == null)
-        {
-            <p class="text-center mt-4">Entry not found.</p>
-        }
-        else
-        {
-            <EditForm Model="@_entryToEdit" OnValidSubmit="HandleUpdateAsync">
-                <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger mb-2" />
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Primary Mood</label>
-                        <InputSelect @bind-Value="_entryToEdit.PrimaryMood" class="mood-select primary">
-                            <option value="">-- Select --</option>
-                            <option value="Happy">Happy</option>
-                            <option value="Calm">Calm</option>
-                            <option value="Sad">Sad</option>
-                            <option value="Angry">Angry</option>
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Secondary Mood</label>
-                        <InputSelect @bind-Value="_entryToEdit.SecondaryMood" class="mood-select secondary">
-                            <option value="">None</option>
-                            <option value="Excited">Excited</option>
-                            <option value="Tired">Tired</option>
-                            <option value="Grateful">Grateful</option>
-                        </InputSelect>
-                    </div>
-                </div>
-
-                <div class="form-group tags-group">
-                    <label>Tags</label>
-                    <div class="tag-input">
-                        <InputText @bind-Value="_entryToEdit.CurrentTagInput" placeholder="Add a tag..." />
-                        <button type="button" class="btn btn-add" @onclick="AddTag">Add</button>
-                    </div>
-                    <div class="tag-list">
-                        @foreach (var tag in _entryToEdit.Tags)
-                        {
-                            <span class="tag-badge">
-                                @tag
-                                <span style="cursor:pointer; margin-left:4px;" @onclick="() => RemoveTag(tag)">×</span>
-                            </span>
-                        }
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Journal Content</label>
-                    <InputTextArea @bind-Value="_entryToEdit.Content" class="content-area" />
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-save">Update Entry</button>
-                    <button type="button" class="btn btn-cancel" @onclick="Cancel">Cancel</button>
-                </div>
-            </EditForm>
-        }
-    </div>
-</div>
-
-<style>
-.entry-page {
-    display: flex;
-    justify-content: center;
-    margin: 2rem auto;
+@if (_entry == null)
+{
+    <p>Entry not found.</p>
 }
-
-.entry-card {
-    width: 100%;
-    max-width: 700px;
-    background: #f0f8ff;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+else
+{
+    <EditForm Model="_entry" OnValidSubmit="Update">
+        <InputTextArea @bind-Value="_entry.Content" class="content-area" />
+        <button class="btn btn-save mt-2">Update</button>
+    </EditForm>
 }
-
-.card-header {
-    background: linear-gradient(120deg, #00B4D8, #48CAE4);
-    color: white;
-    padding: 1.5rem;
-    text-align: center;
-    font-weight: 600;
-    font-size: 1.6rem;
-}
-
-.form-row {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-}
-
-.form-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
-label {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #0077B6;
-}
-
-.mood-select {
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ccc;
-}
-
-.tags-group {
-    padding: 0 1rem;
-}
-
-.tag-input {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.btn-add {
-    background: #00B4D8;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.8rem;
-}
-
-.tag-list {
-    margin-top: 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
-.tag-badge {
-    background: #ade8f4;
-    color: #0077B6;
-    padding: 0.3rem 0.7rem;
-    border-radius: 1rem;
-    font-size: 0.85rem;
-}
-
-.content-area {
-    width: 100%;
-    min-height: 200px;
-    border-radius: 0.75rem;
-    border: 1px solid #ccc;
-    padding: 0.75rem;
-    font-size: 1rem;
-    resize: vertical;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.form-actions {
-    padding: 1rem;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.btn-save {
-    background: linear-gradient(120deg, #00B4D8, #48CAE4);
-    color: white;
-    border: none;
-    padding: 0.6rem 1.5rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: 0.3s;
-}
-
-.btn-save:hover {
-    opacity: 0.9;
-}
-
-.btn-cancel {
-    background: #adb5bd;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.5rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
-}
-</style>
-
 @code {
     [Parameter] public Guid Id { get; set; }
-    private JournalEntry? _entryToEdit;
+    private JournalEntry? _entry;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _entryToEdit = JournalService.GetEntryById(Id);
+        _entry = await JournalService.GetEntryByIdAsync(Id);
     }
 
-    private void AddTag()
+    private async Task Update()
     {
-        if (!string.IsNullOrWhiteSpace(_entryToEdit?.CurrentTagInput))
-        {
-            _entryToEdit.Tags.Add(_entryToEdit.CurrentTagInput!);
-            _entryToEdit.CurrentTagInput = "";
-        }
-    }
-
-    private void RemoveTag(string tag)
-    {
-        _entryToEdit?.Tags.Remove(tag);
-    }
-
-    private void HandleUpdateAsync()
-    {
-        JournalService.UpdateEntry(_entryToEdit!);
-        NavManager.NavigateTo("/history");
-    }
-
-    private void Cancel()
-    {
+        await JournalService.UpdateEntryAsync(_entry!);
         NavManager.NavigateTo("/history");
     }
 }

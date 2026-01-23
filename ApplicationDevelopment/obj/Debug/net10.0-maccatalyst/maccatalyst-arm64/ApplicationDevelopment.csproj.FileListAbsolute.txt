@@ -349,6 +349,11 @@
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/ApplicationDevelopment.genruntimeconfig.cache
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/ref/ApplicationDevelopment.dll
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/ApplicationDevelopment.sourcelink.json
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/SQLite-net.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/SQLitePCLRaw.batteries_v2.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/SQLitePCLRaw.core.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/SQLitePCLRaw.provider.e_sqlite3.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/libe_sqlite3.dylib
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/Microsoft.AspNetCore.Authorization.stamp
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/Microsoft.AspNetCore.Components.stamp
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/Microsoft.AspNetCore.Components.Forms.stamp
@@ -384,4 +389,8 @@
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/Microsoft.Maui.stamp
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/Microsoft.Maui.Essentials.stamp
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/Microsoft.Maui.Graphics.stamp
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/SQLite-net.stamp
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/SQLitePCLRaw.batteries_v2.stamp
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/SQLitePCLRaw.core.stamp
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/resourcestamps/SQLitePCLRaw.provider.e_sqlite3.stamp
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/obj/Debug/net10.0-maccatalyst/maccatalyst-arm64/unpack/Microsoft.Maui.Essentials/BundleResource/xml/microsoft_maui_essentials_fileprovider_file_paths.xml

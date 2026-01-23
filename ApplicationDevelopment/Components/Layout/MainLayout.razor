@@ -1,17 +1,24 @@
 ﻿@inherits LayoutComponentBase
+@using ApplicationDevelopment.Service
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
+<div class="app-container">
+    <div class="vertical-navbar">
+        <h4 class="nav-title">My Journal</h4>
+
+        <a href="/add-entry" class="nav-link @(AuthService.IsUnlocked() ? "" : "disabled-link")">Add Entry</a>
+        <a href="/history" class="nav-link @(AuthService.IsUnlocked() ? "" : "disabled-link")">History</a>
+        <a href="/lock" class="nav-link">Unlock</a>
+        <a href="/register" class="nav-link">Set PIN</a>
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    <div class="main-content">
+        @Body
+    </div>
 </div>
+
+<style>
+    .disabled-link {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+</style>

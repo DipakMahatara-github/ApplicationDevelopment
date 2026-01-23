@@ -1,6 +1,38 @@
-﻿<Router AppAssembly="typeof(MauiProgram).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+﻿@using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
+
+<Router AppAssembly="@typeof(Routes).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
-        <FocusOnNavigate RouteData="routeData" Selector="h1"/>
+        <RouteView RouteData="@routeData" DefaultLayout="typeof(ApplicationDevelopment.Components.Layout.MainLayout)" />
     </Found>
+    <NotFound>
+        <NotFound />
+    </NotFound>
 </Router>
+
+@code {
+    private bool _checked = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _checked)
+            return;
+
+        _checked = true;
+
+        var hasPin = await AuthService.HasPinAsync();
+        var isUnlocked = AuthService.IsUnlocked();
+        var currentUri = NavManager.Uri.ToLower();
+
+        if (!hasPin && !currentUri.Contains("/register"))
+        {
+            NavManager.NavigateTo("/register", true);
+            return;
+        }
+
+        if (hasPin && !isUnlocked && !currentUri.Contains("/lock"))
+        {
+            NavManager.NavigateTo("/lock", true);
+        }
+    }
+}

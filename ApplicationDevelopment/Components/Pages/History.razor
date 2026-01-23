@@ -3,105 +3,33 @@
 @using ApplicationDevelopment.Service
 @inject NavigationManager NavManager
 
-<div class="history-container">
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-6"><h3>Journal History</h3></div>
-        <div class="col-md-6">
-            <input type="text" class="form-control search-input" placeholder="Search content or #tags..." 
-                   @bind="_searchText" @bind:event="oninput" />
-        </div>
-    </div>
+<h2>Journal History</h2>
 
-    <hr />
+@if (_entries.Count == 0)
+{
+    <p>No journal entries found.</p>
+}
+else
+{
+    foreach (var e in _entries)
+    {
+        <div class="card mb-2 p-3">
+            <p><strong>Date:</strong> @e.CreatedAt</p>
+            <p><strong>Mood:</strong> @e.PrimaryMood</p>
+            <p>@e.Content</p>
 
-    @if (GetFilteredEntries().Count == 0)
-    {
-        <p class="text-center text-muted mt-5">No entries found.</p>
-    }
-    else
-    {
-        <div class="history-list">
-            @foreach (var item in GetFilteredEntries())
-            {
-                <div class="card history-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
-                            <div>
-                                <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => Edit(item.Id)">
-                                    Edit
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Delete(item.Id)">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                        <p class="mt-2 lead">@item.Content</p>
-                        <p class="mb-2"><strong>Mood:</strong> @item.PrimaryMood @(string.IsNullOrEmpty(item.SecondaryMood) ? "" : " / " + item.SecondaryMood)</p>
-                        <div>
-                            @foreach (var t in item.Tags)
-                            {
-                                <span class="badge tag-badge">#@t</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
+            <button class="btn btn-sm btn-warning" @onclick="() => Edit(e.Id)">Edit</button>
+            <button class="btn btn-sm btn-danger" @onclick="() => Delete(e.Id)">Delete</button>
         </div>
     }
-</div>
-
-<style>
-.history-container {
-    background-color: #E6F2FF; /* Soft light blue to match navbar */
-    min-height: 100vh;
-    padding: 2rem;
 }
-
-/* Search input */
-.search-input {
-    border-radius: 0.5rem;
-    border: 1px solid #00B4D8;
-}
-
-/* History card */
-.history-card {
-    border: none;
-    border-left: 5px solid #00B4D8; /* match navbar gradient end color */
-    border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
-    background-color: #ffffff; /* card white for contrast */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-}
-
-.history-card:hover {
-    transform: translateY(-3px);
-}
-
-/* Tag badge */
-.tag-badge {
-    background-color: #00B4D8; /* match navbar gradient */
-    color: #fff;
-    margin-right: 0.3rem;
-    margin-bottom: 0.2rem;
-    padding: 0.3rem 0.5rem;
-    border-radius: 0.4rem;
-    font-size: 0.85rem;
-}
-</style>
 
 @code {
-    private string _searchText = "";
+    private List<JournalEntry> _entries = new();
 
-    private List<JournalEntry> GetFilteredEntries()
+    protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrWhiteSpace(_searchText))
-            return JournalService.AllEntries;
-
-        return JournalService.AllEntries.FindAll(x => 
-            (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) || 
-            x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+        _entries = await JournalService.GetAllEntriesAsync();
     }
 
     private void Edit(Guid id)
@@ -109,9 +37,9 @@
         NavManager.NavigateTo($"/edit-entry/{id}");
     }
 
-    private void Delete(Guid id)
+    private async Task Delete(Guid id)
     {
-        JournalService.DeleteEntry(id);
+        await JournalService.DeleteEntryAsync(id);
+        _entries = await JournalService.GetAllEntriesAsync();
     }
-    
 }

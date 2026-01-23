@@ -1,0 +1,21 @@
+@page "/lock"
+@using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
+
+<input type="password" class="form-control" @bind="pin" />
+<button class="btn btn-success mt-2" @onclick="Unlock">Unlock</button>
+
+<p class="text-danger">@error</p>
+
+@code {
+    private string pin = "";
+    private string error = "";
+
+    private async Task Unlock()
+    {
+        if (await AuthService.ValidatePinAsync(pin))
+            NavManager.NavigateTo("/history", true);
+        else
+            error = "Incorrect PIN";
+    }
+}

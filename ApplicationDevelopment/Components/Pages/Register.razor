@@ -1,0 +1,20 @@
+@page "/register"
+@using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
+
+<input class="form-control" placeholder="Username" @bind="username" />
+<input type="password" class="form-control mt-2" placeholder="PIN" @bind="pin" />
+
+<button class="btn btn-primary mt-2" @onclick="Save">Save</button>
+
+@code {
+    private string username = "";
+    private string pin = "";
+
+    private async Task Save()
+    {
+        AuthService.SaveUsername(username);
+        await AuthService.SavePinAsync(pin);
+        NavManager.NavigateTo("/lock", true);
+    }
+}

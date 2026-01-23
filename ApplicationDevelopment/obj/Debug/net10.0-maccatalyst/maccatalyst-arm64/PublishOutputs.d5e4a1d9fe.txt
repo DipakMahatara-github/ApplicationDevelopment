@@ -68,6 +68,10 @@
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/Microsoft.Maui.dll
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/Microsoft.Maui.Essentials.dll
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/Microsoft.Maui.Graphics.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/SQLite-net.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/SQLitePCLRaw.batteries_v2.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/SQLitePCLRaw.core.dll
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/SQLitePCLRaw.provider.e_sqlite3.dll
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/ApplicationDevelopment.dll
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/Microsoft.CSharp.dll
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/Microsoft.VisualBasic.Core.dll
@@ -244,5 +248,6 @@
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/Microsoft.MacCatalyst.dll
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/ApplicationDevelopment.pdb
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/Microsoft.MacCatalyst.pdb
+/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/libe_sqlite3.dylib
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MonoBundle/System.Private.CoreLib.aotdata.arm64
 /Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/publish/../ApplicationDevelopment.app/Contents/MacOS//ApplicationDevelopment

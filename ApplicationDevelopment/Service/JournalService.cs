@@ -1,42 +1,55 @@
 using ApplicationDevelopment.Model;
+using SQLite;
 
 namespace ApplicationDevelopment.Service
 {
     public static class JournalService
     {
-        // List of all journal entries
-        public static List<JournalEntry> AllEntries { get; } = new List<JournalEntry>();
+        private static SQLiteAsyncConnection? _db;
 
-        // Add a new entry
-        public static void AddEntry(JournalEntry entry)
+        private static async Task Init()
         {
-            AllEntries.Add(entry);
+            if (_db != null) return;
+
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "journal.db3");
+            _db = new SQLiteAsyncConnection(dbPath);
+            await _db.CreateTableAsync<JournalEntry>();
         }
 
-        // Get an entry by ID
-        public static JournalEntry? GetEntryById(Guid id)
+        public static async Task<List<JournalEntry>> GetAllEntriesAsync()
         {
-            return AllEntries.Find(x => x.Id == id);
+            await Init();
+            return await _db!.Table<JournalEntry>()
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
         }
 
-        // Update an existing entry
-        public static void UpdateEntry(JournalEntry updatedEntry)
+        public static async Task AddEntryAsync(JournalEntry entry)
         {
-            var index = AllEntries.FindIndex(x => x.Id == updatedEntry.Id);
-            if (index >= 0)
-            {
-                AllEntries[index] = updatedEntry;
-            }
+            await Init();
+            await _db!.InsertAsync(entry);
         }
 
-        // Delete an entry by ID
-        public static void DeleteEntry(Guid id)
+        public static async Task UpdateEntryAsync(JournalEntry entry)
         {
-            var itemToRemove = AllEntries.Find(x => x.Id == id);
-            if (itemToRemove != null)
-            {
-                AllEntries.Remove(itemToRemove);
-            }
+            await Init();
+            await _db!.UpdateAsync(entry);
+        }
+
+        public static async Task DeleteEntryAsync(Guid id)
+        {
+            await Init();
+            var entry = await GetEntryByIdAsync(id);
+            if (entry != null)
+                await _db!.DeleteAsync(entry);
+        }
+
+        public static async Task<JournalEntry?> GetEntryByIdAsync(Guid id)
+        {
+            await Init();
+            return await _db!.Table<JournalEntry>()
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
         }
     }
 }
