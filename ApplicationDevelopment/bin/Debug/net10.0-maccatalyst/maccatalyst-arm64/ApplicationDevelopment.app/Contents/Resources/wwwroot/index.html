@@ -13,18 +13,55 @@
 
 <body>
 
-    <div class="status-bar-safe-area"></div>
+<div class="status-bar-safe-area"></div>
 
-    <div id="app">Loading...</div>
+<div id="app">Loading...</div>
 
-    <div id="blazor-error-ui" data-nosnippet>
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
-        <span class="dismiss">🗙</span>
-    </div>
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
 
-    <script src="_framework/blazor.webview.js" autostart="false"></script>
+<!-- ✅ ADD CHART.JS HERE -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    window.renderMoodChart = (labels, values) => {
+        const ctx = document.getElementById('moodChart');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Mood Count',
+                    data: values,
+                    backgroundColor: '#48CAE4'
+                }]
+            }
+        });
+    };
+
+    window.renderEntryChart = (labels, values) => {
+        const ctx = document.getElementById('entryChart');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Entries',
+                    data: values,
+                    borderColor: '#0077B6',
+                    fill: false,
+                    tension: 0.3
+                }]
+            }
+        });
+    };
+</script>
+<!-- ✅ END -->
+
+<script src="_framework/blazor.webview.js" autostart="false"></script>
 
 </body>
-
 </html>
