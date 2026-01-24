@@ -3,36 +3,35 @@
 
 <Router AppAssembly="@typeof(Routes).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="typeof(ApplicationDevelopment.Components.Layout.MainLayout)" />
+
+        @if (IsProtected(routeData.PageType) && !AuthService.IsLoggedIn())
+        {
+            NavManager.NavigateTo("/login", true);
+        }
+        else
+        {
+            <RouteView RouteData="@routeData"
+                       DefaultLayout="typeof(ApplicationDevelopment.Components.Layout.MainLayout)" />
+        }
+
     </Found>
+
     <NotFound>
-        <NotFound />
+        <LayoutView Layout="typeof(ApplicationDevelopment.Components.Layout.MainLayout)">
+            <h3>Page not found</h3>
+        </LayoutView>
     </NotFound>
 </Router>
 
 @code {
-    private bool _checked = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private bool IsProtected(Type pageType)
     {
-        if (!firstRender || _checked)
-            return;
-
-        _checked = true;
-
-        var hasPin = await AuthService.HasPinAsync();
-        var isUnlocked = AuthService.IsUnlocked();
-        var currentUri = NavManager.Uri.ToLower();
-
-        if (!hasPin && !currentUri.Contains("/register"))
+        return pageType.Name switch
         {
-            NavManager.NavigateTo("/register", true);
-            return;
-        }
-
-        if (hasPin && !isUnlocked && !currentUri.Contains("/lock"))
-        {
-            NavManager.NavigateTo("/lock", true);
-        }
+            "AddEntry" => true,
+            "History" => true,
+            "EditEntry" => true,
+            _ => false
+        };
     }
 }

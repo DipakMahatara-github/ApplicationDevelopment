@@ -3,33 +3,128 @@
 @using ApplicationDevelopment.Service
 @inject NavigationManager NavManager
 
-<h2>Journal History</h2>
-
-@if (_entries.Count == 0)
+@if (isChecking)
 {
-    <p>No journal entries found.</p>
+    <p></p>
+}
+else if (!isAllowed)
+{
+    <p></p>
 }
 else
 {
-    foreach (var e in _entries)
-    {
-        <div class="card mb-2 p-3">
-            <p><strong>Date:</strong> @e.CreatedAt</p>
-            <p><strong>Mood:</strong> @e.PrimaryMood</p>
-            <p>@e.Content</p>
+<div class="history-container">
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6"><h3>Journal History</h3></div>
+        <div class="col-md-6">
+            <input type="text" class="form-control search-input" placeholder="Search content or #tags..."
+                   @bind="_searchText" @bind:event="oninput" />
+        </div>
+    </div>
 
-            <button class="btn btn-sm btn-warning" @onclick="() => Edit(e.Id)">Edit</button>
-            <button class="btn btn-sm btn-danger" @onclick="() => Delete(e.Id)">Delete</button>
+    <hr />
+
+    @if (GetFilteredEntries().Count == 0)
+    {
+        <p class="text-center text-muted mt-5">No entries found.</p>
+    }
+    else
+    {
+        <div class="history-list">
+            @foreach (var item in GetFilteredEntries())
+            {
+                <div class="card history-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => Edit(item.Id)">Edit</button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Delete(item.Id)">Delete</button>
+                            </div>
+                        </div>
+
+                        <p class="mt-2 lead">@item.Content</p>
+                        <p class="mb-2">
+                            <strong>Mood:</strong> @item.PrimaryMood @(string.IsNullOrEmpty(item.SecondaryMood) ? "" : " / " + item.SecondaryMood)
+                        </p>
+
+                        <div>
+                            @foreach (var t in item.Tags)
+                            {
+                                <span class="badge tag-badge">@t</span>   @* ✅ removed extra # *@
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     }
+</div>
 }
 
+<style>
+.history-container {
+    background-color: #E6F2FF;
+    min-height: 100vh;
+    padding: 2rem;
+}
+.search-input {
+    border-radius: 0.5rem;
+    border: 1px solid #00B4D8;
+}
+.history-card {
+    border: none;
+    border-left: 5px solid #00B4D8;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.tag-badge {
+    background-color: #00B4D8;
+    color: #fff;
+    margin-right: 0.3rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+}
+</style>
+
 @code {
+    private bool isChecking = true;
+    private bool isAllowed = false;
+
+    private string _searchText = "";
     private List<JournalEntry> _entries = new();
 
     protected override async Task OnInitializedAsync()
     {
+        isAllowed = AuthService.IsLoggedIn();
+        isChecking = false;
+
+        if (!isAllowed)
+        {
+            NavManager.NavigateTo("/login", true);
+            return;
+        }
+
         _entries = await JournalService.GetAllEntriesAsync();
+
+        // ✅ LOAD TAGS FROM JSON
+        foreach (var e in _entries)
+        {
+            e.LoadTags();
+        }
+    }
+
+    private List<JournalEntry> GetFilteredEntries()
+    {
+        if (string.IsNullOrWhiteSpace(_searchText))
+            return _entries;
+
+        return _entries.FindAll(x =>
+            (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
+            x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
     }
 
     private void Edit(Guid id)
@@ -41,5 +136,10 @@ else
     {
         await JournalService.DeleteEntryAsync(id);
         _entries = await JournalService.GetAllEntriesAsync();
+
+        foreach (var e in _entries)
+        {
+            e.LoadTags(); // ✅ reload tags
+        }
     }
 }

@@ -1,14 +1,29 @@
 ﻿@inherits LayoutComponentBase
 @using ApplicationDevelopment.Service
+@implements IDisposable
 
 <div class="app-container">
     <div class="vertical-navbar">
         <h4 class="nav-title">My Journal</h4>
 
-        <a href="/add-entry" class="nav-link @(AuthService.IsUnlocked() ? "" : "disabled-link")">Add Entry</a>
-        <a href="/history" class="nav-link @(AuthService.IsUnlocked() ? "" : "disabled-link")">History</a>
-        <a href="/lock" class="nav-link">Unlock</a>
-        <a href="/register" class="nav-link">Set PIN</a>
+        @if (_isLoggedIn)
+        {
+            <NavLink href="/add-entry" class="nav-link" ActiveClass="active">Add Entry</NavLink>
+            <NavLink href="/history" class="nav-link" ActiveClass="active">History</NavLink>
+        }
+        else
+        {
+            <div class="nav-link locked-link">🔒 Add Entry</div>
+            <div class="nav-link locked-link">🔒 History</div>
+        }
+
+        <NavLink href="/login" class="nav-link">Login</NavLink>
+        <NavLink href="/register" class="nav-link">Set Account</NavLink>
+
+        @if (_isLoggedIn)
+        {
+            <button class="logout-btn" @onclick="Logout">Logout</button>
+        }
     </div>
 
     <div class="main-content">
@@ -17,8 +32,80 @@
 </div>
 
 <style>
-    .disabled-link {
-        pointer-events: none;
-        opacity: 0.4;
-    }
+.app-container { display:flex; min-height:100vh; }
+
+.vertical-navbar {
+    width:220px;
+    background:linear-gradient(180deg,#89CFF0,#00B4D8);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top:2rem;
+    box-shadow:3px 0 8px rgba(0,0,0,0.1);
+    position:fixed;
+    top:0; left:0; bottom:0;
+}
+
+.nav-title { color:#fff; font-size:1.5rem; font-weight:700; margin-bottom:2rem; }
+
+.nav-link {
+    color:#fff;
+    font-weight:600;
+    font-size:1.1rem;
+    padding:.8rem 1.5rem;
+    margin-bottom:1rem;
+    border-radius:.5rem;
+    text-decoration:none;
+    width:90%;
+    text-align:center;
+}
+
+.nav-link:hover { background:rgba(255,255,255,.2); }
+
+.locked-link {
+    opacity:0.4;
+    cursor:not-allowed;
+}
+
+.logout-btn {
+    margin-top:1rem;
+    background:#fff;
+    border:none;
+    padding:.5rem 1rem;
+    border-radius:.5rem;
+    cursor:pointer;
+}
+
+.main-content {
+    margin-left:220px;
+    padding:2rem;
+    width:calc(100% - 220px);
+    background-color:#f0f8ff;
+}
 </style>
+
+@code {
+    private bool _isLoggedIn;
+
+    protected override void OnInitialized()
+    {
+        _isLoggedIn = AuthService.IsLoggedIn();
+        AuthService.OnAuthStateChanged += Refresh;
+    }
+
+    private void Refresh()
+    {
+        _isLoggedIn = AuthService.IsLoggedIn();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= Refresh;
+    }
+}

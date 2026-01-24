@@ -1,5 +1,6 @@
-using SQLite;
 using System.ComponentModel.DataAnnotations;
+using SQLite;
+using System.Text.Json;
 
 namespace ApplicationDevelopment.Model
 {
@@ -8,21 +9,34 @@ namespace ApplicationDevelopment.Model
         [PrimaryKey]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Required]
+        [Required(ErrorMessage = "Please write something.")]
         public string? Content { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        [Required]
         public string? PrimaryMood { get; set; }
+
         public string? SecondaryMood { get; set; }
 
-        public string TagsString { get; set; } = "";
+        // ✅ Stored in SQLite
+        public string TagsJson { get; set; } = "[]";
 
+        // ✅ Used in UI (REAL LIST)
         [Ignore]
-        public List<string> Tags
+        public List<string> Tags { get; set; } = new();
+
+        // ✅ Sync Tags <-> TagsJson
+        public void SyncTags()
         {
-            get => string.IsNullOrEmpty(TagsString) ? new List<string>() : TagsString.Split(',').ToList();
-            set => TagsString = string.Join(",", value);
+            TagsJson = JsonSerializer.Serialize(Tags);
+        }
+
+        public void LoadTags()
+        {
+            Tags = string.IsNullOrEmpty(TagsJson)
+                ? new List<string>()
+                : JsonSerializer.Deserialize<List<string>>(TagsJson)!;
         }
 
         [Ignore]

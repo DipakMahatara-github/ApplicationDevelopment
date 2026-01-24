@@ -2,19 +2,38 @@
 @using ApplicationDevelopment.Service
 @inject NavigationManager NavManager
 
-<input class="form-control" placeholder="Username" @bind="username" />
-<input type="password" class="form-control mt-2" placeholder="PIN" @bind="pin" />
+<h2>Set Account</h2>
 
-<button class="btn btn-primary mt-2" @onclick="Save">Save</button>
+<div class="entry-card" style="max-width:400px;padding:1rem;">
+    <label>Username</label>
+    <input class="content-area" @bind="_username" />
+
+    <label>Password</label>
+    <input type="password" class="content-area" @bind="_password" />
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <p style="color:red">@_error</p>
+    }
+
+    <button @onclick="RegisterUser">Save</button>
+</div>
 
 @code {
-    private string username = "";
-    private string pin = "";
+    private string _username = "";
+    private string _password = "";
+    private string _error = "";
 
-    private async Task Save()
+    private async Task RegisterUser()
     {
-        AuthService.SaveUsername(username);
-        await AuthService.SavePinAsync(pin);
-        NavManager.NavigateTo("/lock", true);
+        if (string.IsNullOrWhiteSpace(_username) || string.IsNullOrWhiteSpace(_password))
+        {
+            _error = "Username and password required";
+            return;
+        }
+
+        await AuthService.RegisterAsync(_username, _password);
+
+        NavManager.NavigateTo("/login", true); // must login manually
     }
 }

@@ -1,70 +1,61 @@
 using Microsoft.Maui.Storage;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ApplicationDevelopment.Service
 {
     public static class AuthService
     {
-        private const string PinKey = "user_pin";
-        private const string UsernameKey = "username";
-        private static bool _isUnlocked = false;
+        private const string UsernameKey = "app_username";
+        private const string PasswordKey = "app_password";
+        private const string LoginKey = "app_logged_in";
 
-        public static void SaveUsername(string username)
+        public static event Action? OnAuthStateChanged;
+
+        private static void Notify() => OnAuthStateChanged?.Invoke();
+
+        // ✅ SET ACCOUNT (REGISTER)
+        public static Task RegisterAsync(string username, string password)
         {
             Preferences.Set(UsernameKey, username.Trim());
+            Preferences.Set(PasswordKey, Hash(password));
+
+            Logout(); // important: do NOT auto login
+            return Task.CompletedTask;
         }
 
-        public static string GetUsername()
+        // ✅ LOGIN
+        public static Task<bool> LoginAsync(string username, string password)
         {
-            return Preferences.Get(UsernameKey, "");
-        }
+            var savedUser = Preferences.Get(UsernameKey, "");
+            var savedPass = Preferences.Get(PasswordKey, "");
 
-        public static async Task SavePinAsync(string pin)
-        {
-            pin = pin.Trim();
-            try
+            if (savedUser == username.Trim() && savedPass == Hash(password))
             {
-                SecureStorage.Remove(PinKey);
-                await SecureStorage.SetAsync(PinKey, pin);
-                Preferences.Set(PinKey, pin);
+                Preferences.Set(LoginKey, true);
+                Notify();
+                return Task.FromResult(true);
             }
-            catch
-            {
-                Preferences.Set(PinKey, pin);
-            }
+
+            return Task.FromResult(false);
         }
 
-        public static async Task<string?> GetPinAsync()
+        // ✅ LOGOUT
+        public static void Logout()
         {
-            try
-            {
-                var pin = await SecureStorage.GetAsync(PinKey);
-                if (!string.IsNullOrEmpty(pin))
-                    return pin.Trim();
-            }
-            catch { }
-
-            var fallback = Preferences.Get(PinKey, "");
-            return string.IsNullOrEmpty(fallback) ? null : fallback.Trim();
+            Preferences.Set(LoginKey, false);
+            Notify();
         }
 
-        public static async Task<bool> HasPinAsync()
+        public static bool IsLoggedIn()
         {
-            return !string.IsNullOrEmpty(await GetPinAsync());
+            return Preferences.Get(LoginKey, false);
         }
 
-        public static async Task<bool> ValidatePinAsync(string enteredPin)
+        private static string Hash(string input)
         {
-            var storedPin = await GetPinAsync();
-            if (!string.IsNullOrEmpty(storedPin) && storedPin == enteredPin.Trim())
-            {
-                _isUnlocked = true;
-                return true;
-            }
-            return false;
+            using var sha = SHA256.Create();
+            return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(input)));
         }
-
-        public static bool IsUnlocked() => _isUnlocked;
-
-        public static void Lock() => _isUnlocked = false;
     }
 }

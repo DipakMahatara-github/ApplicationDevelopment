@@ -1,0 +1,39 @@
+@page "/login"
+@using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
+
+<h2>Login</h2>
+
+<div style="max-width:400px;">
+    <label>Username</label>
+    <input @bind="username" />
+
+    <label>Password</label>
+    <input type="password" @bind="password" />
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <p style="color:red">@error</p>
+    }
+
+    <button @onclick="LoginUser">Login</button>
+</div>
+
+@code {
+    private string username = "";
+    private string password = "";
+    private string error = "";
+
+    private async Task LoginUser()
+    {
+        var ok = await AuthService.LoginAsync(username, password);
+
+        if (!ok)
+        {
+            error = "Invalid username or password";
+            return;
+        }
+
+        NavManager.NavigateTo("/add-entry", true);
+    }
+}
