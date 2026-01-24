@@ -2,38 +2,157 @@
 @using ApplicationDevelopment.Service
 @inject NavigationManager NavManager
 
-<h2>Set Account</h2>
+<div class="auth-page">
+    <div class="auth-card">
+        <h2>👤 Register Account</h2>
 
-<div class="entry-card" style="max-width:400px;padding:1rem;">
-    <label>Username</label>
-    <input class="content-area" @bind="_username" />
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <div class="auth-success">@_message</div>
+        }
 
-    <label>Password</label>
-    <input type="password" class="content-area" @bind="_password" />
+        <div class="auth-group">
+            <label>Username</label>
+            <input class="auth-input" @bind="_username" placeholder="Create username" />
+        </div>
 
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <p style="color:red">@_error</p>
-    }
+        <div class="auth-group">
+            <label>Password</label>
+            <input type="password" class="auth-input" @bind="_password" placeholder="Create password" />
+        </div>
 
-    <button @onclick="RegisterUser">Save</button>
+        <button class="auth-btn" @onclick="RegisterUser">Register</button>
+
+        <div class="auth-link">
+            Already have an account?
+            <span @onclick="GoToLogin">Login</span>
+        </div>
+    </div>
 </div>
+
+<style>
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.auth-card {
+    width: 380px;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 1.2rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.auth-card h2 {
+    margin-bottom: 1.2rem;
+    color: #0077B6;
+    font-weight: 700;
+}
+
+.auth-group {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.auth-group label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #023E8A;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.6rem;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    margin-top: 0.3rem;
+    transition: 0.2s;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #00B4D8;
+    box-shadow: 0 0 0 2px rgba(0,180,216,0.15);
+}
+
+.auth-btn {
+    width: 100%;
+    margin-top: 0.8rem;
+    background: linear-gradient(120deg, #00B4D8, #48CAE4);
+    border: none;
+    color: white;
+    padding: 0.65rem;
+    border-radius: 0.7rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.auth-btn:hover {
+    transform: scale(1.02);
+    background: linear-gradient(120deg, #0096C7, #00B4D8);
+}
+
+.auth-link {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.auth-link span {
+    color: #0077B6;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.auth-link span:hover {
+    text-decoration: underline;
+}
+
+.auth-success {
+    background: #e6fffa;
+    color: #065f46;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+}
+
+@@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 
 @code {
     private string _username = "";
     private string _password = "";
-    private string _error = "";
+    private string _message = "";
 
     private async Task RegisterUser()
     {
         if (string.IsNullOrWhiteSpace(_username) || string.IsNullOrWhiteSpace(_password))
         {
-            _error = "Username and password required";
+            _message = "⚠️ Username and password required!";
             return;
         }
 
         await AuthService.RegisterAsync(_username, _password);
+        _message = "✅ Account created successfully!";
 
-        NavManager.NavigateTo("/login", true); // must login manually
+        await Task.Delay(800);
+        NavManager.NavigateTo("/login");
+    }
+
+    private void GoToLogin()
+    {
+        NavManager.NavigateTo("/login");
     }
 }
