@@ -1,0 +1,181 @@
+@page "/calendar"
+@using ApplicationDevelopment.Model
+@using ApplicationDevelopment.Service
+@inject NavigationManager NavManager
+
+<h2>🗓️ Journal Calendar</h2>
+
+<div class="calendar-container">
+    <div class="calendar-header">
+        <button @onclick="PrevMonth">◀</button>
+        <h3>@_currentMonth.ToString("MMMM yyyy")</h3>
+        <button @onclick="NextMonth">▶</button>
+    </div>
+
+    <div class="calendar-grid">
+        @foreach (var day in _weekDays)
+        {
+            <div class="calendar-day-header">@day</div>
+        }
+
+        @foreach (var day in _calendarDays)
+        {
+            var cssClass = HasEntry(day) ? "calendar-day has-entry" : "calendar-day";
+
+            <div class="@cssClass" @onclick="() => SelectDate(day)">
+                @if (day != null)
+                {
+                    <span>@day.Value.Day</span>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@if (_selectedDate != null)
+{
+    <h4>Entries on @_selectedDate.Value.ToString("dd MMM yyyy")</h4>
+
+    @if (_selectedEntries.Count == 0)
+    {
+        <p>No entries for this date.</p>
+    }
+    else
+    {
+        @foreach (var entry in _selectedEntries)
+        {
+            <div class="calendar-entry-card">
+                <p><strong>@entry.PrimaryMood</strong> - @entry.Content</p>
+                <button @onclick="() => GoToEdit(entry.Id)">Edit</button>
+            </div>
+        }
+    }
+}
+
+<style>
+.calendar-container {
+    max-width: 700px;
+    margin: 1rem auto;
+    background: #f0f8ff;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.calendar-day-header {
+    font-weight: bold;
+    text-align: center;
+    color: #0077B6;
+}
+
+.calendar-day {
+    height: 50px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.calendar-day:hover {
+    background: #ade8f4;
+}
+
+.has-entry {
+    background: #48CAE4;
+    color: white;
+    font-weight: bold;
+}
+
+.calendar-entry-card {
+    background: white;
+    margin: 0.5rem 0;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border-left: 5px solid #00B4D8;
+}
+</style>
+
+@code {
+    private DateTime _currentMonth = DateTime.Today;
+    private List<DateTime?> _calendarDays = new();
+    private readonly string[] _weekDays = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+
+    private DateTime? _selectedDate;
+    private List<JournalEntry> _allEntries = new();
+    private List<JournalEntry> _selectedEntries = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn())
+        {
+            NavManager.NavigateTo("/login", true);
+            return;
+        }
+
+        _allEntries = await JournalService.GetAllEntriesAsync();
+        BuildCalendar();
+    }
+
+    private void BuildCalendar()
+    {
+        _calendarDays.Clear();
+
+        var firstDay = new DateTime(_currentMonth.Year, _currentMonth.Month, 1);
+        int startDay = (int)firstDay.DayOfWeek;
+        int daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
+
+        for (int i = 0; i < startDay; i++)
+            _calendarDays.Add(null);
+
+        for (int day = 1; day <= daysInMonth; day++)
+            _calendarDays.Add(new DateTime(_currentMonth.Year, _currentMonth.Month, day));
+    }
+
+    private bool HasEntry(DateTime? date)
+    {
+        if (date == null) return false;
+        return _allEntries.Any(e => e.CreatedAt.Date == date.Value.Date);
+    }
+
+    private void SelectDate(DateTime? date)
+    {
+        if (date == null) return;
+
+        _selectedDate = date;
+        _selectedEntries = _allEntries
+            .Where(e => e.CreatedAt.Date == date.Value.Date)
+            .ToList();
+    }
+
+    private void PrevMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(-1);
+        BuildCalendar();
+    }
+
+    private void NextMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(1);
+        BuildCalendar();
+    }
+
+    private void GoToEdit(Guid id)
+    {
+        NavManager.NavigateTo($"/edit-entry/{id}");
+    }
+}

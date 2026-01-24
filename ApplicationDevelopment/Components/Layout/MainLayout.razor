@@ -10,11 +10,13 @@
         {
             <NavLink href="/add-entry" class="nav-link" ActiveClass="active">Add Entry</NavLink>
             <NavLink href="/history" class="nav-link" ActiveClass="active">History</NavLink>
+            <NavLink href="/calendar" class="nav-link" ActiveClass="active">Calendar</NavLink>
         }
         else
         {
             <div class="nav-link locked-link">🔒 Add Entry</div>
             <div class="nav-link locked-link">🔒 History</div>
+            <div class="nav-link locked-link">🔒 Calendar</div>
         }
 
         <NavLink href="/login" class="nav-link">Login</NavLink>
@@ -46,7 +48,12 @@
     top:0; left:0; bottom:0;
 }
 
-.nav-title { color:#fff; font-size:1.5rem; font-weight:700; margin-bottom:2rem; }
+.nav-title {
+    color:#fff;
+    font-size:1.5rem;
+    font-weight:700;
+    margin-bottom:2rem;
+}
 
 .nav-link {
     color:#fff;
@@ -58,13 +65,23 @@
     text-decoration:none;
     width:90%;
     text-align:center;
+    transition:.3s;
 }
 
-.nav-link:hover { background:rgba(255,255,255,.2); }
+.nav-link:hover {
+    background:rgba(255,255,255,.2);
+    transform:scale(1.05);
+}
+
+.nav-link.active {
+    background:rgba(255,255,255,.4);
+    color:#023E8A;
+}
 
 .locked-link {
     opacity:0.4;
     cursor:not-allowed;
+    pointer-events:none;
 }
 
 .logout-btn {
@@ -81,6 +98,7 @@
     padding:2rem;
     width:calc(100% - 220px);
     background-color:#f0f8ff;
+    min-height:100vh;
 }
 </style>
 

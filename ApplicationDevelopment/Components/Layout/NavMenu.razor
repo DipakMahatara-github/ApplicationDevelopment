@@ -4,30 +4,46 @@
 <div class="vertical-navbar">
     <h4 class="nav-title">My Journal</h4>
 
-    @if (AuthService.IsLoggedIn())
+    @if (_isLoggedIn)
     {
-        <NavLink href="/add-entry" class="nav-link">Add Entry</NavLink>
-        <NavLink href="/history" class="nav-link">History</NavLink>
+        <NavLink href="/add-entry" class="nav-link" ActiveClass="active">Add Entry</NavLink>
+        <NavLink href="/history" class="nav-link" ActiveClass="active">History</NavLink>
+        <NavLink href="/calendar" class="nav-link" ActiveClass="active">Calendar</NavLink>
     }
     else
     {
         <div class="nav-link locked-link">🔒 Add Entry</div>
         <div class="nav-link locked-link">🔒 History</div>
+        <div class="nav-link locked-link">🔒 Calendar</div>
     }
 
-    <NavLink href="/login" class="nav-link">Unlock</NavLink>
-    <NavLink href="/register" class="nav-link">Set PIN</NavLink>
+    <NavLink href="/login" class="nav-link">Login</NavLink>
+    <NavLink href="/register" class="nav-link">Set Account</NavLink>
+
+    @if (_isLoggedIn)
+    {
+        <button class="logout-btn" @onclick="Logout">Logout</button>
+    }
 </div>
 
 @code {
+    private bool _isLoggedIn;
+
     protected override void OnInitialized()
     {
+        _isLoggedIn = AuthService.IsLoggedIn();
         AuthService.OnAuthStateChanged += Refresh;
     }
 
     private void Refresh()
     {
+        _isLoggedIn = AuthService.IsLoggedIn();
         InvokeAsync(StateHasChanged);
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
     }
 
     public void Dispose()
