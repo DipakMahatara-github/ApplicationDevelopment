@@ -1,6 +1,7 @@
 @page "/add-entry"
 @using ApplicationDevelopment.Model
 @using ApplicationDevelopment.Service
+@using Markdig
 @inject NavigationManager NavManager
 
 @if (!isLoaded)
@@ -60,9 +61,23 @@ else
                 </div>
             </div>
 
+            <!-- ✅ MARKDOWN EDITOR -->
             <div class="form-group">
-                <label>Journal Content</label>
-                <InputTextArea @bind-Value="_newEntry.Content" class="content-area" placeholder="Write your story..." />
+                <label>Journal Content (Markdown Supported)</label>
+
+                <div style="display:flex; gap:15px;">
+                    <!-- Editor -->
+                    <InputTextArea 
+                        @bind-Value="_newEntry.Content"
+                        class="content-area"
+                        placeholder="Write using Markdown..."
+                        @oninput="UpdatePreview" />
+
+                    <!-- Preview -->
+                    <div style="width:50%; border:1px solid #ccc; border-radius:0.75rem; padding:10px; background:white; overflow:auto;">
+                        @((MarkupString)_markdownPreview)
+                    </div>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -145,7 +160,7 @@ label {
     font-size: 0.85rem;
 }
 .content-area {
-    width: 100%;
+    width: 50%;
     min-height: 200px;
     border-radius: 0.75rem;
     border: 1px solid #ccc;
@@ -168,11 +183,13 @@ label {
     font-size: 1rem;
 }
 </style>
+
 @code {
     private bool isLoaded = false;
     private bool isAllowed = false;
 
     private JournalEntry _newEntry = new();
+    private string _markdownPreview = "";
 
     protected override Task OnInitializedAsync()
     {
@@ -186,6 +203,12 @@ label {
 
         isLoaded = true;
         return Task.CompletedTask;
+    }
+
+    private void UpdatePreview(ChangeEventArgs e)
+    {
+        var text = _newEntry.Content ?? "";
+        _markdownPreview = Markdown.ToHtml(text);
     }
 
     private void AddTag()
@@ -207,14 +230,12 @@ label {
         }
 
         _newEntry.CurrentTagInput = "";
-
-        StateHasChanged(); // ✅ FORCE UI UPDATE
+        StateHasChanged();
     }
 
     private async Task HandleSaveAsync()
     {
-        _newEntry.SyncTags(); // ✅ convert Tags -> TagsJson before saving
-
+        _newEntry.SyncTags();
         await JournalService.AddEntryAsync(_newEntry);
 
         _newEntry = new JournalEntry();

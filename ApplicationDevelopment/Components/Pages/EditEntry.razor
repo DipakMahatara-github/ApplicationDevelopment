@@ -1,6 +1,7 @@
 @page "/edit-entry/{Id:guid}"
 @using ApplicationDevelopment.Model
 @using ApplicationDevelopment.Service
+@using Markdig
 @inject NavigationManager NavManager
 
 @if (_entryToEdit == null)
@@ -59,9 +60,22 @@ else
                 </div>
             </div>
 
+            <!-- ✅ MARKDOWN EDITOR -->
             <div class="form-group">
-                <label>Journal Content</label>
-                <InputTextArea @bind-Value="_entryToEdit.Content" class="content-area" />
+                <label>Journal Content (Markdown Supported)</label>
+
+                <div style="display:flex; gap:15px;">
+                    <!-- Editor -->
+                    <InputTextArea 
+                        @bind-Value="_entryToEdit.Content"
+                        class="content-area"
+                        @oninput="UpdatePreview" />
+
+                    <!-- Preview -->
+                    <div style="width:50%; border:1px solid #ccc; border-radius:0.75rem; padding:10px; background:white; overflow:auto;">
+                        @((MarkupString)_markdownPreview)
+                    </div>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -74,7 +88,7 @@ else
 }
 
 <style>
-/* ✅ SAME CSS AS ADD-ENTRY */
+/* ✅ SAME CSS AS BEFORE (UNCHANGED) */
 .entry-page {
     display: flex;
     justify-content: center;
@@ -145,7 +159,7 @@ label {
     font-size: 0.85rem;
 }
 .content-area {
-    width: 100%;
+    width: 50%;
     min-height: 200px;
     border-radius: 0.75rem;
     border: 1px solid #ccc;
@@ -179,6 +193,7 @@ label {
 @code {
     [Parameter] public Guid Id { get; set; }
     private JournalEntry? _entryToEdit;
+    private string _markdownPreview = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,7 +204,18 @@ label {
         }
 
         _entryToEdit = await JournalService.GetEntryByIdAsync(Id);
-        _entryToEdit?.LoadTags(); // ✅ load tags from DB
+        _entryToEdit?.LoadTags();
+
+        if (_entryToEdit != null)
+        {
+            _markdownPreview = Markdown.ToHtml(_entryToEdit.Content ?? "");
+        }
+    }
+
+    private void UpdatePreview(ChangeEventArgs e)
+    {
+        var text = _entryToEdit?.Content ?? "";
+        _markdownPreview = Markdown.ToHtml(text);
     }
 
     private void AddTag()
@@ -216,7 +242,7 @@ label {
 
     private async Task HandleUpdateAsync()
     {
-        _entryToEdit!.SyncTags(); // ✅ convert tags to JSON
+        _entryToEdit!.SyncTags();
         await JournalService.UpdateEntryAsync(_entryToEdit);
         NavManager.NavigateTo("/history");
     }

@@ -1,10 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "YJ/P8QO61Fc=",
+  "dgSpecHash": "UbCygWkeP70=",
   "success": true,
   "projectFilePath": "/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/ApplicationDevelopment.csproj",
   "expectedPackageFiles": [
+    "/Users/sushmitamahatara/.nuget/packages/bouncycastle.cryptography/2.6.2/bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/googlegson/2.13.1.1/googlegson.2.13.1.1.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/itext/9.5.0/itext.9.5.0.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/itext.bouncy-castle-adapter/9.5.0/itext.bouncy-castle-adapter.9.5.0.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/itext.commons/9.5.0/itext.commons.9.5.0.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/itext7/9.5.0/itext7.9.5.0.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/itext7.bouncy-castle-adapter/9.5.0/itext7.bouncy-castle-adapter.9.5.0.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/markdig/0.44.0/markdig.0.44.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.aspnetcore.authorization/10.0.0/microsoft.aspnetcore.authorization.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.aspnetcore.components/10.0.0/microsoft.aspnetcore.components.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.aspnetcore.components.analyzers/10.0.0/microsoft.aspnetcore.components.analyzers.10.0.0.nupkg.sha512",
@@ -13,6 +20,7 @@
     "/Users/sushmitamahatara/.nuget/packages/microsoft.aspnetcore.components.webview/10.0.0/microsoft.aspnetcore.components.webview.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.aspnetcore.components.webview.maui/10.0.1/microsoft.aspnetcore.components.webview.maui.10.0.1.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.aspnetcore.metadata/10.0.0/microsoft.aspnetcore.metadata.10.0.0.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/microsoft.dotnet.platformabstractions/1.1.0/microsoft.dotnet.platformabstractions.1.1.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.configuration/10.0.0/microsoft.extensions.configuration.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.configuration.abstractions/10.0.0/microsoft.extensions.configuration.abstractions.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.configuration.binder/10.0.0/microsoft.extensions.configuration.binder.10.0.0.nupkg.sha512",
@@ -20,6 +28,7 @@
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.configuration.json/10.0.0/microsoft.extensions.configuration.json.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.dependencyinjection/10.0.0/microsoft.extensions.dependencyinjection.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.dependencymodel/1.1.0/microsoft.extensions.dependencymodel.1.1.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.diagnostics/10.0.0/microsoft.extensions.diagnostics.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.diagnostics.abstractions/10.0.0/microsoft.extensions.diagnostics.abstractions.10.0.0.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.extensions.fileproviders.abstractions/10.0.0/microsoft.extensions.fileproviders.abstractions.10.0.0.nupkg.sha512",
@@ -45,6 +54,7 @@
     "/Users/sushmitamahatara/.nuget/packages/microsoft.maui.graphics/10.0.1/microsoft.maui.graphics.10.0.1.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.maui.resizetizer/10.0.1/microsoft.maui.resizetizer.10.0.1.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/microsoft.net.illink.tasks/10.0.1/microsoft.net.illink.tasks.10.0.1.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/newtonsoft.json/9.0.1/newtonsoft.json.9.0.1.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/sqlite-net-pcl/1.9.172/sqlite-net-pcl.1.9.172.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/sqlitepclraw.bundle_green/2.1.2/sqlitepclraw.bundle_green.2.1.2.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/sqlitepclraw.core/2.1.2/sqlitepclraw.core.2.1.2.nupkg.sha512",
@@ -53,6 +63,8 @@
     "/Users/sushmitamahatara/.nuget/packages/sqlitepclraw.provider.e_sqlite3/2.1.2/sqlitepclraw.provider.e_sqlite3.2.1.2.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/sqlitepclraw.provider.sqlite3/2.1.2/sqlitepclraw.provider.sqlite3.2.1.2.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/system.runtime.interopservices.nfloat.internal/6.0.1/system.runtime.interopservices.nfloat.internal.6.0.1.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/system.security.cryptography.pkcs/6.0.5/system.security.cryptography.pkcs.6.0.5.nupkg.sha512",
+    "/Users/sushmitamahatara/.nuget/packages/system.security.cryptography.xml/6.0.2/system.security.cryptography.xml.6.0.2.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/xamarin.android.glide/4.16.0.14/xamarin.android.glide.4.16.0.14.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/xamarin.android.glide.annotations/4.16.0.14/xamarin.android.glide.annotations.4.16.0.14.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/xamarin.android.glide.disklrucache/4.16.0.14/xamarin.android.glide.disklrucache.4.16.0.14.nupkg.sha512",
@@ -146,5 +158,32 @@
     "/Users/sushmitamahatara/.nuget/packages/xamarin.kotlinx.serialization.core/1.9.0.1/xamarin.kotlinx.serialization.core.1.9.0.1.nupkg.sha512",
     "/Users/sushmitamahatara/.nuget/packages/xamarin.kotlinx.serialization.core.jvm/1.9.0.1/xamarin.kotlinx.serialization.core.jvm.1.9.0.1.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Newtonsoft.Json' 9.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
+      "projectPath": "/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/ApplicationDevelopment.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/sushmitamahatara/RiderProjects/ApplicationDevelopment/ApplicationDevelopment/ApplicationDevelopment.csproj",
+      "libraryId": "Newtonsoft.Json",
+      "targetGraphs": [
+        "net10.0-android36.0",
+        "net10.0-android36.0/android-arm64",
+        "net10.0-android36.0/android-x64",
+        "net10.0-android36.0/iossimulator-arm64",
+        "net10.0-android36.0/maccatalyst-arm64",
+        "net10.0-ios26.2",
+        "net10.0-ios26.2/android-arm64",
+        "net10.0-ios26.2/android-x64",
+        "net10.0-ios26.2/iossimulator-arm64",
+        "net10.0-ios26.2/maccatalyst-arm64",
+        "net10.0-maccatalyst26.2",
+        "net10.0-maccatalyst26.2/android-arm64",
+        "net10.0-maccatalyst26.2/android-x64",
+        "net10.0-maccatalyst26.2/iossimulator-arm64",
+        "net10.0-maccatalyst26.2/maccatalyst-arm64"
+      ]
+    }
+  ]
 }

@@ -12,10 +12,6 @@
 		<data>
 		8x0ZHZ0zQbpbh0gklwuAwHFL898=
 		</data>
-		<key>Resources/MauiInfo.plist</key>
-		<data>
-		A/74dbGgxu/fUONI00Bycn7+qco=
-		</data>
 		<key>Resources/MonoTouchDebugConfiguration.txt</key>
 		<data>
 		oowkf1sL6T19nanXUObgmuayWqM=
@@ -83,14 +79,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			jYy5S8Xf1Lfov+7dCu8Qb6IlO6eZY4fcsFkrmPoKBXs=
+			YlGK5oHZs3MDg85UvU3l0XB/dNFgGjV/nMxXLYAfztM=
 			</data>
 		</dict>
 		<key>MonoBundle/ApplicationDevelopment.pdb</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			np/RDeO/VdJ4EZmt4DmAcrj3wgyV9GT1cQgRy2MU0kY=
+			BBx6W+9tX/vOX/caTHHl1QhhcN5it6p0UB/Rbw8bSVI=
+			</data>
+		</dict>
+		<key>MonoBundle/BouncyCastle.Cryptography.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			5e6vbSY8STYZmC/TY45hNQdzEdCMlh4f4Sj5EH0p68Y=
+			</data>
+		</dict>
+		<key>MonoBundle/Markdig.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			pPlLxfZAENt2DwY6/Bwa56mme7cU2W6rLidz/MJnDRg=
 			</data>
 		</dict>
 		<key>MonoBundle/Microsoft.AspNetCore.Authorization.dll</key>
@@ -149,6 +159,13 @@
 			CQvaWOnnifDPqWevYK6rePJ8j7uVlPP0m3cjSBxwkFg=
 			</data>
 		</dict>
+		<key>MonoBundle/Microsoft.DotNet.PlatformAbstractions.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			N+6AAp96sTQgLNYpHpldkE2r5jnM8f8vqVB21/h4ztc=
+			</data>
+		</dict>
 		<key>MonoBundle/Microsoft.Extensions.Configuration.Abstractions.dll</key>
 		<dict>
 			<key>hash2</key>
@@ -196,6 +213,13 @@
 			<key>hash2</key>
 			<data>
 			1kalzKXoEWrka0NxUpcIP6ijjbY26rYOZu7vNQ10zV0=
+			</data>
+		</dict>
+		<key>MonoBundle/Microsoft.Extensions.DependencyModel.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			bu/0Ow+p8jI/UkE470nfDUIUsA4IPs5dFwUrQ9ld5VQ=
 			</data>
 		</dict>
 		<key>MonoBundle/Microsoft.Extensions.Diagnostics.Abstractions.dll</key>
@@ -385,6 +409,13 @@
 			<key>hash2</key>
 			<data>
 			NCCSCs6a3U4JjkG/lfpd3O5a64TUJ29n85bhmKwqUHQ=
+			</data>
+		</dict>
+		<key>MonoBundle/Newtonsoft.Json.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			XZbuUbKv9ZIDnuvC7SA9n1X935wIgvs00/DgeDdJVKU=
 			</data>
 		</dict>
 		<key>MonoBundle/SQLite-net.dll</key>
@@ -1276,6 +1307,13 @@
 			O+DtfaE6JmOnJVMGx8xhNWElkuh4Zd2cmLvdHqnt2Cw=
 			</data>
 		</dict>
+		<key>MonoBundle/System.Security.Cryptography.Pkcs.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			pqeY8V9i/iGRPkpMkvn8HtJ2RXp26kcX8kkcsn2+HZY=
+			</data>
+		</dict>
 		<key>MonoBundle/System.Security.Cryptography.Primitives.dll</key>
 		<dict>
 			<key>hash2</key>
@@ -1288,6 +1326,13 @@
 			<key>hash2</key>
 			<data>
 			oUMCPeSye60lkOMp1H40UeLhP53ETSYUAVTFp78K7l8=
+			</data>
+		</dict>
+		<key>MonoBundle/System.Security.Cryptography.Xml.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			+7CFypeFYbYqx4T0ML1I60Ox2eeiGJziKXLr/rCBXRk=
 			</data>
 		</dict>
 		<key>MonoBundle/System.Security.Cryptography.dll</key>
@@ -1682,6 +1727,97 @@
 			RWyEX4tQAEo+KoW52aJxPHrDZExUGZn5baNIwIxvqeo=
 			</data>
 		</dict>
+		<key>MonoBundle/itext.barcodes.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			9/KeQU8Anuq+4HeTG+uPbtkNvp7021SSa+Wnzx/e3UE=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.bouncy-castle-adapter.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			GRPtc3ix78WZnd4Xi4LdLoqQcaAMoWHivI6ha8+L6pM=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.bouncy-castle-connector.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			OfEbRBkfr25/3ceTFD6h+Cqj9Jkpr+cKh9BLcuA+3D4=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.commons.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			4MCqJ1xeH6FqayKT2EXa8Mg6yXYNTVqkIjtWGxK3NfM=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.forms.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			wW+p9ae4rDdyqVSYSIoAdotsdizxhAVQS1Hcz17tNoM=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.io.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			xsE0j8h//44WtaxJJ18VebYy5usGuZKoEhYbE7hKtjQ=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.kernel.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			wVp2Nk0/M4K0P5RURmitvHAAQgWdhegNtVXBSk1jUjo=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.layout.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			QXbU+qEXXvDeb1e7XQHH9dQVF1oHl/Z5O34d+X3JI6U=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.pdfa.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			qTLACpSs0QhWwHIu0sbjuUzYxPmAtnJ2kcpm2OVvyMk=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.pdfua.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			78BbSKkY4ccQt0RmzIB7RZIDmcqv2P55a8C+6um/YMQ=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.sign.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			L34VJuJXLzENHkMhT50O7/5ClKoCjwUq6ps7k4sIux8=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.styledxmlparser.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			a2NJKwaz0yrIfrO510NsAkxMCw7OEKt+G5d/uK8LTwc=
+			</data>
+		</dict>
+		<key>MonoBundle/itext.svg.dll</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zeLT4+LXxe8ZEZJ+rZRCRSHVh8/98dLHuyqwk8pjhXA=
+			</data>
+		</dict>
 		<key>MonoBundle/ja/Microsoft.Maui.Controls.resources.dll</key>
 		<dict>
 			<key>hash2</key>
@@ -1855,13 +1991,6 @@
 			<key>hash2</key>
 			<data>
 			s9O9YNATb7VyzLZHhLgE2zNmzpv/qvDMkuBrxKH4Ftc=
-			</data>
-		</dict>
-		<key>Resources/MauiInfo.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			UEORARmYMQB21vcObyk2tL7rhjGOSCGHQz3UGRUssW0=
 			</data>
 		</dict>
 		<key>Resources/MonoTouchDebugConfiguration.txt</key>
