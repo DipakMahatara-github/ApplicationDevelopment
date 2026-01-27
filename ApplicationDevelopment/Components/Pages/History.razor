@@ -51,12 +51,31 @@ else
                         <div>
                             @foreach (var t in item.Tags)
                             {
-                                <span class="badge tag-badge">@t</span>   @* ✅ removed extra # *@
+                                <span class="badge tag-badge">@t</span>
                             }
                         </div>
                     </div>
                 </div>
             }
+        </div>
+
+        <!-- ✅ PAGINATION UI -->
+        <div class="d-flex justify-content-center align-items-center mt-3">
+            <button class="btn btn-sm btn-outline-primary me-2"
+                    disabled="@(_currentPage == 1)"
+                    @onclick="PrevPage">
+                ◀ Prev
+            </button>
+
+            <span>
+                Page @_currentPage of @_totalPages
+            </span>
+
+            <button class="btn btn-sm btn-outline-primary ms-2"
+                    disabled="@(_currentPage == _totalPages)"
+                    @onclick="NextPage">
+                Next ▶
+            </button>
         </div>
     }
 </div>
@@ -97,6 +116,11 @@ else
     private string _searchText = "";
     private List<JournalEntry> _entries = new();
 
+    // ✅ PAGINATION VARIABLES
+    private int _currentPage = 1;
+    private int _pageSize = 5; // entries per page
+    private int _totalPages = 1;
+
     protected override async Task OnInitializedAsync()
     {
         isAllowed = AuthService.IsLoggedIn();
@@ -110,21 +134,58 @@ else
 
         _entries = await JournalService.GetAllEntriesAsync();
 
-        // ✅ LOAD TAGS FROM JSON
         foreach (var e in _entries)
         {
             e.LoadTags();
         }
+
+        CalculatePages();
     }
 
     private List<JournalEntry> GetFilteredEntries()
     {
-        if (string.IsNullOrWhiteSpace(_searchText))
-            return _entries;
+        List<JournalEntry> filtered;
 
-        return _entries.FindAll(x =>
-            (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
-            x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+        if (string.IsNullOrWhiteSpace(_searchText))
+        {
+            filtered = _entries;
+        }
+        else
+        {
+            filtered = _entries.FindAll(x =>
+                (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
+                x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        // ✅ UPDATE TOTAL PAGES
+        _totalPages = (int)Math.Ceiling(filtered.Count / (double)_pageSize);
+        if (_totalPages == 0) _totalPages = 1;
+
+        return filtered
+            .Skip((_currentPage - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+    }
+
+    private void CalculatePages()
+    {
+        _totalPages = (int)Math.Ceiling(_entries.Count / (double)_pageSize);
+        if (_totalPages == 0) _totalPages = 1;
+
+        if (_currentPage > _totalPages)
+            _currentPage = _totalPages;
+    }
+
+    private void NextPage()
+    {
+        if (_currentPage < _totalPages)
+            _currentPage++;
+    }
+
+    private void PrevPage()
+    {
+        if (_currentPage > 1)
+            _currentPage--;
     }
 
     private void Edit(Guid id)
@@ -139,7 +200,9 @@ else
 
         foreach (var e in _entries)
         {
-            e.LoadTags(); // ✅ reload tags
+            e.LoadTags();
         }
+
+        CalculatePages();
     }
 }

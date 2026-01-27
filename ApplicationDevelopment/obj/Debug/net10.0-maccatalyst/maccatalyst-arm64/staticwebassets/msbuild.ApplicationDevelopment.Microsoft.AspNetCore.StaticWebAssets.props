@@ -12,12 +12,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>3izn8qq88g</Fingerprint>
-      <Integrity>e2O08oKvsWMRXjqj2O1IAFYSDa5wT0Gevc7+Tr+nX5s=</Integrity>
+      <Fingerprint>ed71i3b3mx</Fingerprint>
+      <Integrity>kolom04JcIQCRfwfGnL7NAp0JeemS3BMAU6oYFfv4mc=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>3681</FileLength>
-      <LastWriteTime>Sat, 20 Dec 2025 15:25:23 GMT</LastWriteTime>
+      <FileLength>4418</FileLength>
+      <LastWriteTime>Tue, 27 Jan 2026 12:07:25 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\ApplicationDevelopment.styles.css'))">
@@ -52,12 +52,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>b2clp46icq</Fingerprint>
-      <Integrity>U1m57xmp3oUYWLmnpNMZcKFKibEglz0sv6vcD5MUeg4=</Integrity>
+      <Fingerprint>v6cqcaev5f</Fingerprint>
+      <Integrity>yatxgeed/LX4QdS/bQmCCBZ1MUylfq3SoIq/HKsKVDs=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>1866</FileLength>
-      <LastWriteTime>Sat, 24 Jan 2026 10:41:52 GMT</LastWriteTime>
+      <FileLength>2705</FileLength>
+      <LastWriteTime>Tue, 27 Jan 2026 12:18:17 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\bootstrap\dist\css\bootstrap.min.css'))">

@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using ApplicationDevelopment.Service
+@inject IJSRuntime JS
 @implements IDisposable
 
 <div class="app-container">
@@ -11,14 +12,14 @@
             <NavLink href="/add-entry" class="nav-link" ActiveClass="active">Add Entry</NavLink>
             <NavLink href="/history" class="nav-link" ActiveClass="active">History</NavLink>
             <NavLink href="/calendar" class="nav-link" ActiveClass="active">Calendar</NavLink>
-            <NavLink href="/dashboard" class="nav-link" ActiveClass="active">Dashboard</NavLink>  @* ✅ ADDED *@
+            <NavLink href="/dashboard" class="nav-link" ActiveClass="active">Dashboard</NavLink>
         }
         else
         {
             <div class="nav-link locked-link">🔒 Add Entry</div>
             <div class="nav-link locked-link">🔒 History</div>
             <div class="nav-link locked-link">🔒 Calendar</div>
-            <div class="nav-link locked-link">🔒 Dashboard</div>  @* ✅ ADDED *@
+            <div class="nav-link locked-link">🔒 Dashboard</div>
         }
 
         <NavLink href="/login" class="nav-link">Login</NavLink>
@@ -31,6 +32,21 @@
     </div>
 
     <div class="main-content">
+
+        <!-- 🌙 TOP RIGHT THEME TOGGLE -->
+        <div class="theme-topbar">
+            <span class="theme-status">@_modeStatus</span>
+
+            <div class="theme-toggle" @onclick="ToggleTheme">
+                <span class="theme-icon">@_themeIcon</span>
+                <span class="theme-text">@_themeText</span>
+
+                <div class="switch">
+                    <div class="switch-circle @( _isDarkMode ? "on" : "" )"></div>
+                </div>
+            </div>
+        </div>
+
         @Body
     </div>
 </div>
@@ -40,7 +56,7 @@
 
 .vertical-navbar {
     width:220px;
-    background:linear-gradient(180deg,#89CFF0,#00B4D8);
+    background: var(--nav-bg);
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -99,13 +115,87 @@
     margin-left:220px;
     padding:2rem;
     width:calc(100% - 220px);
-    background-color:#f0f8ff;
+    background-color: var(--bg-color);
     min-height:100vh;
+    color: var(--text-color);
+}
+
+/* 🌙 THEME TOGGLE UI (NEW - DOES NOT BREAK YOUR CSS) */
+
+.theme-topbar {
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:12px;
+    margin-bottom:1rem;
+}
+
+.theme-status {
+    font-weight:600;
+    font-size:0.95rem;
+}
+
+.theme-toggle {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    background: var(--card-color);
+    padding:6px 12px;
+    border-radius:20px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+    transition:0.3s;
+}
+
+.theme-toggle:hover {
+    transform:scale(1.05);
+}
+
+.theme-icon {
+    font-size:1rem;
+}
+
+.theme-text {
+    font-weight:600;
+    font-size:0.9rem;
+}
+
+.switch {
+    width:42px;
+    height:22px;
+    background:#ccc;
+    border-radius:20px;
+    position:relative;
+    transition:0.3s;
+}
+
+.switch-circle {
+    width:18px;
+    height:18px;
+    background:white;
+    border-radius:50%;
+    position:absolute;
+    top:2px;
+    left:2px;
+    transition:0.3s;
+}
+
+.switch-circle.on {
+    transform:translateX(20px);
+}
+
+body.dark-theme .switch {
+    background:#00B4D8;
 }
 </style>
 
 @code {
     private bool _isLoggedIn;
+
+    private bool _isDarkMode = false;
+    private string _themeText = "Light Mode";
+    private string _themeIcon = "☀️";
+    private string _modeStatus = "Dark Mode OFF";
 
     protected override void OnInitialized()
     {
@@ -113,10 +203,42 @@
         AuthService.OnAuthStateChanged += Refresh;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isDarkMode = await JS.InvokeAsync<bool>("themeManager.isDarkMode");
+            UpdateThemeUI();
+            StateHasChanged();
+        }
+    }
+
     private void Refresh()
     {
         _isLoggedIn = AuthService.IsLoggedIn();
         InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ToggleTheme()
+    {
+        _isDarkMode = await JS.InvokeAsync<bool>("themeManager.toggleTheme");
+        UpdateThemeUI();
+    }
+
+    private void UpdateThemeUI()
+    {
+        if (_isDarkMode)
+        {
+            _themeText = "Dark Mode";
+            _themeIcon = "🌙";
+            _modeStatus = "Dark Mode ON";
+        }
+        else
+        {
+            _themeText = "Light Mode";
+            _themeIcon = "☀️";
+            _modeStatus = "Dark Mode OFF";
+        }
     }
 
     private void Logout()
