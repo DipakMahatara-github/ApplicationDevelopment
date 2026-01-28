@@ -109,6 +109,12 @@
             <canvas id="tagChart"></canvas>
         </div>
 
+        <!-- ✅ NEW TAG BREAKDOWN CHART -->
+        <div class="chart-card big-chart">
+            <h4>Tag Breakdown (%)</h4>
+            <canvas id="tagBreakdownChart"></canvas>
+        </div>
+
         <div class="chart-card big-chart">
             <h4>Word Count Trend</h4>
             <canvas id="wordChart"></canvas>
@@ -366,6 +372,20 @@
         var tagLabels = tagGroups.Select(t => t.Tag).ToArray();
         var tagValues = tagGroups.Select(t => t.Count).ToArray();
 
+        // ✅ TAG BREAKDOWN (%)
+        var totalTags = filteredEntries.SelectMany(e => e.Tags).Count();
+
+        var tagBreakdownGroups = filteredEntries.SelectMany(e => e.Tags)
+            .GroupBy(t => t)
+            .Select(g => new {
+                Tag = g.Key,
+                Percentage = totalTags == 0 ? 0 : Math.Round((g.Count() * 100.0) / totalTags, 2)
+            })
+            .ToList();
+
+        var tagBreakdownLabels = tagBreakdownGroups.Select(t => t.Tag).ToArray();
+        var tagBreakdownValues = tagBreakdownGroups.Select(t => t.Percentage).ToArray();
+
         var wordGroups = filteredEntries.GroupBy(e => e.CreatedAt.Date)
             .Select(g => new {
                 Date = g.Key.ToString("dd MMM"),
@@ -379,6 +399,7 @@
         await JS.InvokeVoidAsync("renderMoodCategoryChart", categoryLabels, categoryValues);
         await JS.InvokeVoidAsync("renderEntryChart", dayLabels, dayValues);
         await JS.InvokeVoidAsync("renderTagChart", tagLabels, tagValues);
+        await JS.InvokeVoidAsync("renderTagBreakdownChart", tagBreakdownLabels, tagBreakdownValues);
         await JS.InvokeVoidAsync("renderWordChart", wordLabels, wordValues);
     }
 }

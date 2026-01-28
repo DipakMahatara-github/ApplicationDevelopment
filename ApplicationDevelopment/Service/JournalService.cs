@@ -23,7 +23,7 @@ namespace ApplicationDevelopment.Service
             await _db.CreateTableAsync<JournalEntry>();
 
             await EnsureMoodCategoryColumn();
-            await EnsureTitleColumn(); // ✅ ADD TITLE MIGRATION
+            await EnsureTitleColumn();
         }
 
         private static async Task EnsureMoodCategoryColumn()
@@ -63,13 +63,44 @@ namespace ApplicationDevelopment.Service
             return entries;
         }
 
-        public static async Task AddEntryAsync(JournalEntry entry)
+        // ✅ FIXED: Get today's entry (SQLite-safe)
+        public static async Task<JournalEntry?> GetTodayEntryAsync()
         {
             await Init();
 
+            var start = DateTime.Today;
+            var end = start.AddDays(1);
+
+            var entry = await _db!.Table<JournalEntry>()
+                .Where(e => e.CreatedAt >= start && e.CreatedAt < end)
+                .FirstOrDefaultAsync();
+
+            if (entry != null)
+            {
+                entry.LoadTags();
+                entry.SetMoodCategory();
+            }
+
+            return entry;
+        }
+
+        // ✅ Add entry (only one per day)
+        public static async Task<bool> AddEntryAsync(JournalEntry entry)
+        {
+            await Init();
+
+            var todayEntry = await GetTodayEntryAsync();
+
+            if (todayEntry != null)
+            {
+                return false; // ❌ already exists today
+            }
+
             entry.SyncTags();
             entry.SetMoodCategory();
+
             await _db!.InsertAsync(entry);
+            return true;
         }
 
         public static async Task UpdateEntryAsync(JournalEntry entry)
@@ -78,6 +109,7 @@ namespace ApplicationDevelopment.Service
 
             entry.SyncTags();
             entry.SetMoodCategory();
+
             await _db!.UpdateAsync(entry);
         }
 

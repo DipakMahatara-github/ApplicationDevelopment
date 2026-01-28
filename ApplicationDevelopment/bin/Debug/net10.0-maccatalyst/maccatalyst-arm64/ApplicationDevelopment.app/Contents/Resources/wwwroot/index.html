@@ -52,7 +52,7 @@
     };
 
     // ================================
-    // ✅ MOOD CATEGORY CHART (NEW)
+    // ✅ MOOD CATEGORY CHART
     // ================================
     window.renderMoodCategoryChart = (labels, values) => {
         const ctx = document.getElementById('moodCategoryChart');
@@ -130,6 +130,47 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false
+            }
+        });
+    };
+
+    // ================================
+    // ✅ TAG BREAKDOWN CHART (%)
+    // ================================
+    window.renderTagBreakdownChart = (labels, values) => {
+        const ctx = document.getElementById('tagBreakdownChart');
+        if (!ctx) return;
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#00B4D8',
+                        '#0077B6',
+                        '#48CAE4',
+                        '#90E0EF',
+                        '#ADE8F4',
+                        '#023E8A',
+                        '#FFB703',
+                        '#FB8500'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ": " + context.raw + "%";
+                            }
+                        }
+                    }
+                }
             }
         });
     };

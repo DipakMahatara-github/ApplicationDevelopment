@@ -1,5 +1,7 @@
 using ApplicationDevelopment.Model;
 using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 
 namespace ApplicationDevelopment.Service
 {
@@ -11,46 +13,78 @@ namespace ApplicationDevelopment.Service
 
             var writer = new PdfWriter(stream);
             var pdf = new PdfDocument(writer);
-            var document = new iText.Layout.Document(pdf);
+            var document = new Document(pdf);
 
-            // ✅ Title
-            document.Add(new iText.Layout.Element.Paragraph("Journal History Report")
-                .SetFontSize(20)
-                .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER));
-
-            document.Add(new iText.Layout.Element.Paragraph(
-                $"Generated on: {DateTime.Now:dd MMM yyyy HH:mm}\n"));
-
-            foreach (var entry in entries)
+            if (entries == null || entries.Count == 0)
             {
-                document.Add(new iText.Layout.Element.Paragraph(
-                    "--------------------------------------------------"));
-
-                document.Add(new iText.Layout.Element.Paragraph(
-                    $"Date: {entry.CreatedAt:dd MMM yyyy HH:mm}"));
-
-                if (!string.IsNullOrWhiteSpace(entry.Title))
-                    document.Add(new iText.Layout.Element.Paragraph(
-                        $"Title: {entry.Title}"));
-
-                document.Add(new iText.Layout.Element.Paragraph(
-                    $"Mood: {entry.PrimaryMood} / {entry.SecondaryMood1} / {entry.SecondaryMood2}"));
-
-                document.Add(new iText.Layout.Element.Paragraph(
-                    $"Mood Category: {entry.MoodCategory}"));
-
-                document.Add(new iText.Layout.Element.Paragraph(
-                    $"Content: {entry.Content}"));
-
-                if (entry.Tags != null && entry.Tags.Any())
-                    document.Add(new iText.Layout.Element.Paragraph(
-                        $"Tags: {string.Join(", ", entry.Tags)}"));
-
-                document.Add(new iText.Layout.Element.Paragraph("\n"));
+                document.Add(new Paragraph("No journal entries found."));
+                document.Close();
+                return stream.ToArray();
             }
 
-            document.Close();
+            // ✅ Sort entries by date
+            entries = entries.OrderBy(e => e.CreatedAt).ToList();
 
+            var startDate = entries.First().CreatedAt;
+            var endDate = entries.Last().CreatedAt;
+
+            int totalEntries = entries.Count;
+            int positiveCount = entries.Count(e => e.MoodCategory == "Positive");
+            int neutralCount = entries.Count(e => e.MoodCategory == "Neutral");
+            int negativeCount = entries.Count(e => e.MoodCategory == "Negative");
+
+            // =========================
+            // ✅ TITLE (NO TextAlignment)
+            // =========================
+            var title = new Paragraph("Journal History Report")
+                .SetFontSize(20);
+
+            document.Add(title);
+
+            document.Add(new Paragraph($"Generated on: {DateTime.Now:dd MMM yyyy HH:mm}"));
+            document.Add(new Paragraph($"Date Range: {startDate:dd MMM yyyy} - {endDate:dd MMM yyyy}"));
+            document.Add(new Paragraph($"Total Entries: {totalEntries}"));
+            document.Add(new Paragraph($"Summary: Positive = {positiveCount}, Neutral = {neutralCount}, Negative = {negativeCount}"));
+            document.Add(new Paragraph("--------------------------------------------------\n"));
+
+            // =========================
+            // ✅ ENTRIES
+            // =========================
+            foreach (var entry in entries)
+            {
+                document.Add(new Paragraph(""));
+
+                document.Add(new Paragraph($"Date: {entry.CreatedAt:dd MMM yyyy HH:mm}"));
+
+                if (!string.IsNullOrWhiteSpace(entry.Title))
+                    document.Add(new Paragraph($"Title: {entry.Title}"));
+
+                // ✅ Fix mood display (no duplicates, no empty values)
+                var moods = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(entry.PrimaryMood))
+                    moods.Add(entry.PrimaryMood);
+
+                if (!string.IsNullOrWhiteSpace(entry.SecondaryMood1) && !moods.Contains(entry.SecondaryMood1))
+                    moods.Add(entry.SecondaryMood1);
+
+                if (!string.IsNullOrWhiteSpace(entry.SecondaryMood2) && !moods.Contains(entry.SecondaryMood2))
+                    moods.Add(entry.SecondaryMood2);
+
+                document.Add(new Paragraph($"Mood: {string.Join(" / ", moods)}"));
+
+                document.Add(new Paragraph($"Mood Category: {entry.MoodCategory}"));
+
+                document.Add(new Paragraph($"Content: {entry.Content}"));
+
+                if (entry.Tags != null && entry.Tags.Any())
+                    document.Add(new Paragraph($"Tags: {string.Join(", ", entry.Tags)}"));
+
+                document.Add(new Paragraph("--------------------------------------------------"));
+            }
+
+
+            document.Close();
             return stream.ToArray();
         }
     }

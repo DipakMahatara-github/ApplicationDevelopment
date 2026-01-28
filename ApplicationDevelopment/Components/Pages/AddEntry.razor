@@ -3,6 +3,7 @@
 @using ApplicationDevelopment.Service
 @using Markdig
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 @if (!isLoaded)
 {
@@ -24,7 +25,7 @@ else
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger mb-2" />
 
-            <!-- ✅ TITLE -->
+            <!-- TITLE -->
             <div class="form-group">
                 <label>Title</label>
                 <InputText @bind-Value="_newEntry.Title" class="form-control" placeholder="Enter title..." />
@@ -118,7 +119,7 @@ else
                         placeholder="Write using Markdown..."
                         @oninput="UpdatePreview" />
 
-                    <div style="width:50%; border:1px solid #ccc; border-radius:0.75rem; padding:10px; background:white; overflow:auto;">
+                    <div class="preview-box">
                         @((MarkupString)_markdownPreview)
                     </div>
                 </div>
@@ -223,7 +224,14 @@ label {
     border: 1px solid #ccc;
     padding: 0.75rem;
     font-size: 1rem;
-    resize: vertical;
+}
+.preview-box {
+    width: 50%;
+    border: 1px solid #ccc;
+    border-radius: 0.75rem;
+    padding: 10px;
+    background: white;
+    overflow:auto;
 }
 .form-actions {
     padding: 1rem;
@@ -308,11 +316,27 @@ label {
 
     private async Task HandleSaveAsync()
     {
-        _newEntry.SyncTags();
-        _newEntry.SetMoodCategory();
+        try
+        {
+            _newEntry.SyncTags();
+            _newEntry.SetMoodCategory();
 
-        await JournalService.AddEntryAsync(_newEntry);
-        _newEntry = new JournalEntry();
-        NavManager.NavigateTo("/history");
+            var success = await JournalService.AddEntryAsync(_newEntry);
+
+            if (!success)
+            {
+                await JS.InvokeVoidAsync("alert",
+                    "❌ You already created a journal entry today.\n\nPlease edit today's entry instead.");
+                return;
+            }
+
+            _newEntry = new JournalEntry();
+            NavManager.NavigateTo("/history");
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Error:\n" + ex.Message);
+        }
     }
+
 }
