@@ -22,7 +22,7 @@ namespace ApplicationDevelopment.Service
             document.Add(new Paragraph($"Generated on: {DateTime.Now}")
                 .SetFontSize(10));
 
-            document.Add(new Paragraph(" ")); // spacing
+            document.Add(new Paragraph(" "));
 
             foreach (var entry in entries)
             {
@@ -35,7 +35,7 @@ namespace ApplicationDevelopment.Service
                     document.Add(new Paragraph("Tags: " + string.Join(", ", entry.Tags)));
                 }
 
-                document.Add(new Paragraph("-------------------------------------"));
+                document.Add(new Paragraph("--------------------------------------------------"));
             }
 
             document.Close();

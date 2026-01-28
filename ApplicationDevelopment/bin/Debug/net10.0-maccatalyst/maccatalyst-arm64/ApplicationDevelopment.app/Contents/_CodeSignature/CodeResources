@@ -12,6 +12,10 @@
 		<data>
 		8x0ZHZ0zQbpbh0gklwuAwHFL898=
 		</data>
+		<key>Resources/MauiInfo.plist</key>
+		<data>
+		A/74dbGgxu/fUONI00Bycn7+qco=
+		</data>
 		<key>Resources/MonoTouchDebugConfiguration.txt</key>
 		<data>
 		oowkf1sL6T19nanXUObgmuayWqM=
@@ -58,7 +62,7 @@
 		</data>
 		<key>Resources/wwwroot/index.html</key>
 		<data>
-		gNSzfiU5wUSJmcT8qqJql574cgY=
+		uz/eZhmNEvr7RL5gsvUDTtxYOOs=
 		</data>
 		<key>Resources/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css</key>
 		<data>
@@ -79,14 +83,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			YlGK5oHZs3MDg85UvU3l0XB/dNFgGjV/nMxXLYAfztM=
+			Tu+cbJgsXUtdVvFuIU2rK+rGZrJBzX8sR6Cj/V8OybA=
 			</data>
 		</dict>
 		<key>MonoBundle/ApplicationDevelopment.pdb</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			BBx6W+9tX/vOX/caTHHl1QhhcN5it6p0UB/Rbw8bSVI=
+			wyfKaKi9OcjnAaDsl8MDiCxzyeMgFkH0/9VrOexF/yY=
 			</data>
 		</dict>
 		<key>MonoBundle/BouncyCastle.Cryptography.dll</key>
@@ -1993,6 +1997,13 @@
 			s9O9YNATb7VyzLZHhLgE2zNmzpv/qvDMkuBrxKH4Ftc=
 			</data>
 		</dict>
+		<key>Resources/MauiInfo.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			UEORARmYMQB21vcObyk2tL7rhjGOSCGHQz3UGRUssW0=
+			</data>
+		</dict>
 		<key>Resources/MonoTouchDebugConfiguration.txt</key>
 		<dict>
 			<key>hash2</key>
@@ -2074,7 +2085,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			yatxgeed/LX4QdS/bQmCCBZ1MUylfq3SoIq/HKsKVDs=
+			PCWvnNVxJ+kgrScFjYH8Misu6eihg0P+t9+BLaR6OlU=
 			</data>
 		</dict>
 		<key>Resources/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css</key>

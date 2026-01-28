@@ -27,8 +27,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    // ================================
+    // ✅ MOOD DISTRIBUTION CHART
+    // ================================
     window.renderMoodChart = (labels, values) => {
         const ctx = document.getElementById('moodChart');
+        if (!ctx) return;
+
         new Chart(ctx, {
             type: 'bar',
             data: {
@@ -38,12 +43,21 @@
                     data: values,
                     backgroundColor: '#48CAE4'
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
             }
         });
     };
 
+    // ================================
+    // ✅ ENTRIES OVER TIME CHART
+    // ================================
     window.renderEntryChart = (labels, values) => {
         const ctx = document.getElementById('entryChart');
+        if (!ctx) return;
+
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -55,10 +69,75 @@
                     fill: false,
                     tension: 0.3
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    };
+
+    // ================================
+    // ✅ MOST USED TAGS CHART (NEW)
+    // ================================
+    window.renderTagChart = (labels, values) => {
+        const ctx = document.getElementById('tagChart');
+        if (!ctx) return;
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#00B4D8',
+                        '#0077B6',
+                        '#48CAE4',
+                        '#90E0EF',
+                        '#ADE8F4',
+                        '#023E8A'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    };
+
+    // ================================
+    // ✅ WORD COUNT TREND CHART (NEW)
+    // ================================
+    window.renderWordChart = (labels, values) => {
+        const ctx = document.getElementById('wordChart');
+        if (!ctx) return;
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Words per Day',
+                    data: values,
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255,107,107,0.2)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
             }
         });
     };
 </script>
+
+<!-- ================================
+     ✅ THEME MANAGER (UNCHANGED)
+================================ -->
 <script>
     window.themeManager = {
         toggleTheme: function () {

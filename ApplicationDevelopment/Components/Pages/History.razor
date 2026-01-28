@@ -5,7 +5,6 @@
 @inject IJSRuntime JS 
 @inject PdfExportService PdfService
 
-
 @if (isChecking)
 {
     <p></p>
@@ -17,19 +16,42 @@ else if (!isAllowed)
 else
 {
 <div class="history-container">
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-6">
-            <h3>Journal History</h3>
-        </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control search-input" placeholder="Search content or #tags..."
-                   @bind="_searchText" @bind:event="oninput" />
-        </div>
-        <div class="col-md-2 text-end">
-            <button class="btn btn-success btn-sm" @onclick="ExportPdf">
-                📄 Export PDF
-            </button>
-        </div>
+
+    <h3>📜 Journal History</h3>
+
+    <!-- ✅ FILTER BAR -->
+    <div class="filter-bar">
+
+        <input type="text" class="form-control search-input"
+               placeholder="Search content or #tags..."
+               @bind="_searchText" @bind:event="oninput" />
+
+        <input type="date" class="form-control" @bind="fromDate" />
+        <input type="date" class="form-control" @bind="toDate" />
+
+        <select class="form-control" @bind="selectedMood">
+            <option value="">All Moods</option>
+            @foreach (var mood in moodList)
+            {
+                <option value="@mood">@mood</option>
+            }
+        </select>
+
+        <select class="form-control" @bind="selectedTag">
+            <option value="">All Tags</option>
+            @foreach (var tag in tagList)
+            {
+                <option value="@tag">@tag</option>
+            }
+        </select>
+
+        <button class="btn btn-primary btn-sm" @onclick="ApplyFilters">
+            Apply Filters
+        </button>
+
+        <button class="btn btn-success btn-sm" @onclick="ExportPdf">
+            📄 Export PDF
+        </button>
     </div>
 
     <hr />
@@ -69,7 +91,7 @@ else
             }
         </div>
 
-        <!-- ✅ PAGINATION UI -->
+        <!-- ✅ PAGINATION -->
         <div class="d-flex justify-content-center align-items-center mt-3">
             <button class="btn btn-sm btn-outline-primary me-2"
                     disabled="@(_currentPage == 1)"
@@ -97,10 +119,20 @@ else
     min-height: 100vh;
     padding: 2rem;
 }
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
 .search-input {
     border-radius: 0.5rem;
     border: 1px solid #00B4D8;
+    min-width: 200px;
 }
+
 .history-card {
     border: none;
     border-left: 5px solid #00B4D8;
@@ -109,6 +141,7 @@ else
     background-color: #ffffff;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
+
 .tag-badge {
     background-color: #00B4D8;
     color: #fff;
@@ -125,6 +158,14 @@ else
 
     private string _searchText = "";
     private List<JournalEntry> _entries = new();
+
+    private DateTime? fromDate;
+    private DateTime? toDate;
+    private string selectedMood = "";
+    private string selectedTag = "";
+
+    private List<string> moodList = new();
+    private List<string> tagList = new();
 
     private int _currentPage = 1;
     private int _pageSize = 5;
@@ -148,28 +189,57 @@ else
             e.LoadTags();
         }
 
+        moodList = _entries.Select(e => e.PrimaryMood)
+            .Where(m => !string.IsNullOrEmpty(m))
+            .Distinct()
+            .ToList();
+
+        tagList = _entries.SelectMany(e => e.Tags)
+            .Distinct()
+            .ToList();
+
+        CalculatePages();
+    }
+
+    private void ApplyFilters()
+    {
+        _currentPage = 1;
         CalculatePages();
     }
 
     private List<JournalEntry> GetFilteredEntries()
     {
-        List<JournalEntry> filtered;
+        IEnumerable<JournalEntry> filtered = _entries;
 
-        if (string.IsNullOrWhiteSpace(_searchText))
+        // ✅ Search (content + tags)
+        if (!string.IsNullOrWhiteSpace(_searchText))
         {
-            filtered = _entries;
-        }
-        else
-        {
-            filtered = _entries.FindAll(x =>
+            filtered = filtered.Where(x =>
                 (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
                 x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
         }
 
-        _totalPages = (int)Math.Ceiling(filtered.Count / (double)_pageSize);
+        // ✅ Date filter
+        if (fromDate != null)
+            filtered = filtered.Where(x => x.CreatedAt.Date >= fromDate.Value.Date);
+
+        if (toDate != null)
+            filtered = filtered.Where(x => x.CreatedAt.Date <= toDate.Value.Date);
+
+        // ✅ Mood filter
+        if (!string.IsNullOrEmpty(selectedMood))
+            filtered = filtered.Where(x => x.PrimaryMood == selectedMood);
+
+        // ✅ Tag filter
+        if (!string.IsNullOrEmpty(selectedTag))
+            filtered = filtered.Where(x => x.Tags.Contains(selectedTag));
+
+        var list = filtered.ToList();
+
+        _totalPages = (int)Math.Ceiling(list.Count / (double)_pageSize);
         if (_totalPages == 0) _totalPages = 1;
 
-        return filtered
+        return list
             .Skip((_currentPage - 1) * _pageSize)
             .Take(_pageSize)
             .ToList();
@@ -179,9 +249,6 @@ else
     {
         _totalPages = (int)Math.Ceiling(_entries.Count / (double)_pageSize);
         if (_totalPages == 0) _totalPages = 1;
-
-        if (_currentPage > _totalPages)
-            _currentPage = _totalPages;
     }
 
     private void NextPage()
@@ -214,16 +281,11 @@ else
         CalculatePages();
     }
 
-    // ✅ FIXED PDF EXPORT
     private async Task ExportPdf()
     {
         try
         {
-            var entriesToExport = string.IsNullOrWhiteSpace(_searchText)
-                ? _entries
-                : _entries.FindAll(x =>
-                    (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
-                    x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+            var entriesToExport = GetFilteredEntries();
 
             if (entriesToExport.Count == 0)
             {
@@ -231,17 +293,15 @@ else
                 return;
             }
 
-            // ✅ Use injected service (NOT new PdfExportService())
             var pdfBytes = PdfService.GenerateJournalPdf(entriesToExport);
 
             var filePath = await FileService.SavePdfAsync(pdfBytes);
 
-            await JS.InvokeVoidAsync("alert", $"✅ PDF saved on Desktop!\n\nLocation:\n{filePath}");
+            await JS.InvokeVoidAsync("alert", $"✅ PDF saved!\n\nLocation:\n{filePath}");
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("alert", "❌ PDF Error:\n" + ex.Message);
         }
     }
-    
 }

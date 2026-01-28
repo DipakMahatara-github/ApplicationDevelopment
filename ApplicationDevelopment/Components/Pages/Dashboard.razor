@@ -52,6 +52,11 @@
             <h4>🏆 Longest Streak</h4>
             <p>@longestStreak days</p>
         </div>
+
+        <div class="stat-card">
+            <h4>❌ Missed Days</h4>
+            <p>@missedDays days</p>
+        </div>
     </div>
 
     <!-- CHARTS -->
@@ -64,6 +69,16 @@
         <div class="chart-card big-chart">
             <h4>Entries Over Time</h4>
             <canvas id="entryChart"></canvas>
+        </div>
+
+        <div class="chart-card big-chart">
+            <h4>Most Used Tags</h4>
+            <canvas id="tagChart"></canvas>
+        </div>
+
+        <div class="chart-card big-chart">
+            <h4>Word Count Trend</h4>
+            <canvas id="wordChart"></canvas>
         </div>
     </div>
 
@@ -112,7 +127,7 @@
 /* STATS GRID */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
 }
 
@@ -183,6 +198,7 @@
     private string mostCommonMood = "None";
     private int currentStreak;
     private int longestStreak;
+    private int missedDays; // ✅ NEW
     private string mostActiveDay = "None";
 
     private DateTime? fromDate;
@@ -199,6 +215,10 @@
         }
 
         entries = await JournalService.GetAllEntriesAsync();
+
+        foreach (var e in entries)
+            e.LoadTags();
+
         filteredEntries = entries;
 
         moodList = entries.Select(e => e.PrimaryMood)
@@ -240,6 +260,7 @@
 
             CalculateStreaks();
             CalculateMostActiveDay();
+            CalculateMissedDays(); // ✅ NEW
         }
         else
         {
@@ -247,6 +268,7 @@
             currentStreak = 0;
             longestStreak = 0;
             mostActiveDay = "None";
+            missedDays = 0; // ✅ NEW
         }
     }
 
@@ -257,6 +279,13 @@
             .Distinct()
             .OrderBy(d => d)
             .ToList();
+
+        if (dates.Count == 0)
+        {
+            currentStreak = 0;
+            longestStreak = 0;
+            return;
+        }
 
         int streak = 1;
         int maxStreak = 1;
@@ -276,9 +305,35 @@
 
         longestStreak = maxStreak;
 
-        currentStreak = dates.Count > 0 && dates.Last() == DateTime.Today
+        currentStreak = dates.Last() == DateTime.Today
             ? streak
             : 0;
+    }
+
+    // ✅ NEW FEATURE: MISSED DAYS
+    private void CalculateMissedDays()
+    {
+        var dates = filteredEntries
+            .Select(e => e.CreatedAt.Date)
+            .Distinct()
+            .OrderBy(d => d)
+            .ToList();
+
+        if (dates.Count == 0)
+        {
+            missedDays = 0;
+            return;
+        }
+
+        var startDate = dates.First();
+        var endDate = DateTime.Today;
+
+        int totalDays = (endDate - startDate).Days + 1;
+
+        missedDays = totalDays - dates.Count;
+
+        if (missedDays < 0)
+            missedDays = 0;
     }
 
     private void CalculateMostActiveDay()
@@ -294,6 +349,7 @@
 
     private async Task RenderCharts()
     {
+        // ✅ Mood Distribution
         var moodGroups = filteredEntries
             .GroupBy(e => e.PrimaryMood)
             .Select(g => new { Mood = g.Key ?? "Unknown", Count = g.Count() })
@@ -302,6 +358,7 @@
         var moodLabels = moodGroups.Select(m => m.Mood).ToArray();
         var moodValues = moodGroups.Select(m => m.Count).ToArray();
 
+        // ✅ Entries Over Time
         var dayGroups = filteredEntries
             .GroupBy(e => e.CreatedAt.Date)
             .OrderBy(g => g.Key)
@@ -311,7 +368,34 @@
         var dayLabels = dayGroups.Select(d => d.Date).ToArray();
         var dayValues = dayGroups.Select(d => d.Count).ToArray();
 
+        // ✅ Most Used Tags
+        var tagGroups = filteredEntries
+            .SelectMany(e => e.Tags)
+            .GroupBy(t => t)
+            .OrderByDescending(g => g.Count())
+            .Select(g => new { Tag = g.Key, Count = g.Count() })
+            .ToList();
+
+        var tagLabels = tagGroups.Select(t => t.Tag).ToArray();
+        var tagValues = tagGroups.Select(t => t.Count).ToArray();
+
+        // ✅ Word Count Trend
+        var wordGroups = filteredEntries
+            .GroupBy(e => e.CreatedAt.Date)
+            .OrderBy(g => g.Key)
+            .Select(g => new
+            {
+                Date = g.Key.ToString("dd MMM"),
+                Words = g.Sum(e => (e.Content ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).Length)
+            })
+            .ToList();
+
+        var wordLabels = wordGroups.Select(w => w.Date).ToArray();
+        var wordValues = wordGroups.Select(w => w.Words).ToArray();
+
         await JS.InvokeVoidAsync("renderMoodChart", moodLabels, moodValues);
         await JS.InvokeVoidAsync("renderEntryChart", dayLabels, dayValues);
+        await JS.InvokeVoidAsync("renderTagChart", tagLabels, tagValues);
+        await JS.InvokeVoidAsync("renderWordChart", wordLabels, wordValues);
     }
 }

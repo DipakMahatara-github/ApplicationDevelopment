@@ -43,13 +43,29 @@ else
                 </div>
             </div>
 
+            <!-- ✅ PREDEFINED TAGS -->
             <div class="form-group tags-group">
-                <label>Add Tags</label>
+                <label>Predefined Tags</label>
+                <div class="tag-list">
+                    @foreach (var tag in predefinedTags)
+                    {
+                        var isSelected = _entryToEdit.Tags.Contains(tag);
+
+                        <button type="button"
+                                class="tag-btn @(isSelected ? "selected-tag" : "")"
+                                @onclick="() => TogglePredefinedTag(tag)">
+                            @tag
+                        </button>
+                    }
+                </div>
+
+                <label class="mt-2">Add Custom Tags</label>
                 <div class="tag-input">
                     <InputText @bind-Value="_entryToEdit.CurrentTagInput" placeholder="e.g. Work, Travel" />
                     <button type="button" class="btn btn-add" @onclick="AddTag">Add</button>
                 </div>
-                <div class="tag-list">
+
+                <div class="tag-list mt-2">
                     @foreach (var tag in _entryToEdit.Tags)
                     {
                         <span class="tag-badge">
@@ -65,13 +81,11 @@ else
                 <label>Journal Content (Markdown Supported)</label>
 
                 <div style="display:flex; gap:15px;">
-                    <!-- Editor -->
                     <InputTextArea 
                         @bind-Value="_entryToEdit.Content"
                         class="content-area"
                         @oninput="UpdatePreview" />
 
-                    <!-- Preview -->
                     <div style="width:50%; border:1px solid #ccc; border-radius:0.75rem; padding:10px; background:white; overflow:auto;">
                         @((MarkupString)_markdownPreview)
                     </div>
@@ -88,7 +102,6 @@ else
 }
 
 <style>
-/* ✅ SAME CSS AS BEFORE (UNCHANGED) */
 .entry-page {
     display: flex;
     justify-content: center;
@@ -158,6 +171,20 @@ label {
     border-radius: 1rem;
     font-size: 0.85rem;
 }
+.tag-btn {
+    border: 1px solid #00B4D8;
+    background: white;
+    color: #0077B6;
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    margin: 0.2rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.selected-tag {
+    background: #00B4D8;
+    color: white;
+}
 .content-area {
     width: 50%;
     min-height: 200px;
@@ -166,7 +193,6 @@ label {
     padding: 0.75rem;
     font-size: 1rem;
     resize: vertical;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 .form-actions {
     padding: 1rem;
@@ -195,6 +221,19 @@ label {
     private JournalEntry? _entryToEdit;
     private string _markdownPreview = "";
 
+    private List<string> predefinedTags = new()
+    {
+        "#Work",
+        "#Health",
+        "#Travel",
+        "#Study",
+        "#Family",
+        "#Friends",
+        "#Fitness",
+        "#Finance",
+        "#Mood"
+    };
+
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.IsLoggedIn())
@@ -218,18 +257,30 @@ label {
         _markdownPreview = Markdown.ToHtml(text);
     }
 
+    private void TogglePredefinedTag(string tag)
+    {
+        if (_entryToEdit!.Tags.Contains(tag))
+            _entryToEdit.Tags.Remove(tag);
+        else
+            _entryToEdit.Tags.Add(tag);
+    }
+
     private void AddTag()
     {
         if (string.IsNullOrWhiteSpace(_entryToEdit?.CurrentTagInput))
             return;
 
-        var cleanTag = _entryToEdit.CurrentTagInput.Trim();
+        var tags = _entryToEdit.CurrentTagInput.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!cleanTag.StartsWith("#"))
-            cleanTag = "#" + cleanTag;
+        foreach (var tag in tags)
+        {
+            var cleanTag = tag.Trim();
+            if (!cleanTag.StartsWith("#"))
+                cleanTag = "#" + cleanTag;
 
-        if (!_entryToEdit.Tags.Contains(cleanTag))
-            _entryToEdit.Tags.Add(cleanTag);
+            if (!_entryToEdit.Tags.Contains(cleanTag))
+                _entryToEdit.Tags.Add(cleanTag);
+        }
 
         _entryToEdit.CurrentTagInput = "";
         StateHasChanged();
@@ -237,7 +288,7 @@ label {
 
     private void RemoveTag(string tag)
     {
-        _entryToEdit?.Tags.Remove(tag);
+        _entryToEdit!.Tags.Remove(tag);
     }
 
     private async Task HandleUpdateAsync()

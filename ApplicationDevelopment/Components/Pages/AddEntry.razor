@@ -47,16 +47,35 @@ else
                 </div>
             </div>
 
+            <!-- ✅ PREDEFINED TAGS -->
             <div class="form-group tags-group">
-                <label>Add Tags</label>
+                <label>Predefined Tags</label>
+                <div class="tag-list">
+                    @foreach (var tag in predefinedTags)
+                    {
+                        var isSelected = _newEntry.Tags.Contains(tag);
+
+                        <button type="button"
+                                class="tag-btn @(isSelected ? "selected-tag" : "")"
+                                @onclick="() => TogglePredefinedTag(tag)">
+                            @tag
+                        </button>
+                    }
+                </div>
+
+                <label class="mt-2">Add Custom Tags</label>
                 <div class="tag-input">
                     <InputText @bind-Value="_newEntry.CurrentTagInput" placeholder="e.g. Work, Travel" />
                     <button type="button" class="btn btn-add" @onclick="AddTag">Add</button>
                 </div>
-                <div class="tag-list">
+
+                <div class="tag-list mt-2">
                     @foreach (var tag in _newEntry.Tags)
                     {
-                        <span class="tag-badge">@tag</span>
+                        <span class="tag-badge">
+                            @tag
+                            <span style="cursor:pointer;margin-left:6px;" @onclick="() => RemoveTag(tag)">×</span>
+                        </span>
                     }
                 </div>
             </div>
@@ -66,14 +85,12 @@ else
                 <label>Journal Content (Markdown Supported)</label>
 
                 <div style="display:flex; gap:15px;">
-                    <!-- Editor -->
                     <InputTextArea 
                         @bind-Value="_newEntry.Content"
                         class="content-area"
                         placeholder="Write using Markdown..."
                         @oninput="UpdatePreview" />
 
-                    <!-- Preview -->
                     <div style="width:50%; border:1px solid #ccc; border-radius:0.75rem; padding:10px; background:white; overflow:auto;">
                         @((MarkupString)_markdownPreview)
                     </div>
@@ -89,7 +106,6 @@ else
 }
 
 <style>
-/* ✅ YOUR ORIGINAL CSS - NOT CHANGED */
 .entry-page {
     display: flex;
     justify-content: center;
@@ -159,6 +175,20 @@ label {
     border-radius: 1rem;
     font-size: 0.85rem;
 }
+.tag-btn {
+    border: 1px solid #00B4D8;
+    background: white;
+    color: #0077B6;
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    margin: 0.2rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.selected-tag {
+    background: #00B4D8;
+    color: white;
+}
 .content-area {
     width: 50%;
     min-height: 200px;
@@ -167,7 +197,6 @@ label {
     padding: 0.75rem;
     font-size: 1rem;
     resize: vertical;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 .form-actions {
     padding: 1rem;
@@ -191,6 +220,19 @@ label {
     private JournalEntry _newEntry = new();
     private string _markdownPreview = "";
 
+    private List<string> predefinedTags = new()
+    {
+        "#Work",
+        "#Health",
+        "#Travel",
+        "#Study",
+        "#Family",
+        "#Friends",
+        "#Fitness",
+        "#Finance",
+        "#Mood"
+    };
+
     protected override Task OnInitializedAsync()
     {
         isAllowed = AuthService.IsLoggedIn();
@@ -211,6 +253,14 @@ label {
         _markdownPreview = Markdown.ToHtml(text);
     }
 
+    private void TogglePredefinedTag(string tag)
+    {
+        if (_newEntry.Tags.Contains(tag))
+            _newEntry.Tags.Remove(tag);
+        else
+            _newEntry.Tags.Add(tag);
+    }
+
     private void AddTag()
     {
         if (string.IsNullOrWhiteSpace(_newEntry.CurrentTagInput))
@@ -221,7 +271,6 @@ label {
         foreach (var tag in tags)
         {
             var cleanTag = tag.Trim();
-
             if (!cleanTag.StartsWith("#"))
                 cleanTag = "#" + cleanTag;
 
@@ -233,11 +282,15 @@ label {
         StateHasChanged();
     }
 
+    private void RemoveTag(string tag)
+    {
+        _newEntry.Tags.Remove(tag);
+    }
+
     private async Task HandleSaveAsync()
     {
         _newEntry.SyncTags();
         await JournalService.AddEntryAsync(_newEntry);
-
         _newEntry = new JournalEntry();
         NavManager.NavigateTo("/history");
     }
