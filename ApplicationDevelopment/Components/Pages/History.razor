@@ -20,11 +20,10 @@ else
 
     <h3>📜 Journal History</h3>
 
-    <!-- ✅ FILTER BAR -->
     <div class="filter-bar">
 
         <input type="text" class="form-control search-input"
-               placeholder="Search content or #tags..."
+               placeholder="Search title, content or #tags..."
                @bind="_searchText" @bind:event="oninput" />
 
         <input type="date" class="form-control" @bind="fromDate" />
@@ -38,7 +37,6 @@ else
             }
         </select>
 
-        <!-- ✅ NEW: MOOD CATEGORY FILTER -->
         <select class="form-control" @bind="selectedMoodCategory">
             <option value="">All Mood Categories</option>
             <option value="Positive">Positive</option>
@@ -84,7 +82,9 @@ else
                             </div>
                         </div>
 
-                        <!-- ✅ MARKDOWN RENDERED CONTENT -->
+                        <!-- ✅ TITLE -->
+                        <h5 class="fw-bold mt-2">@item.Title</h5>
+
                         <div class="mt-2 lead">
                             @((MarkupString)Markdown.ToHtml(item.Content ?? ""))
                         </div>
@@ -96,7 +96,6 @@ else
                             @(string.IsNullOrEmpty(item.SecondaryMood2) ? "" : " / " + item.SecondaryMood2)
                         </p>
 
-                        <!-- ✅ NEW: MOOD CATEGORY DISPLAY -->
                         <p class="mb-2">
                             <strong>Mood Category:</strong> @item.MoodCategory
                         </p>
@@ -112,7 +111,6 @@ else
             }
         </div>
 
-        <!-- ✅ PAGINATION -->
         <div class="d-flex justify-content-center align-items-center mt-3">
             <button class="btn btn-sm btn-outline-primary me-2"
                     disabled="@(_currentPage == 1)"
@@ -184,7 +182,7 @@ else
     private DateTime? toDate;
     private string selectedMood = "";
     private string selectedTag = "";
-    private string selectedMoodCategory = ""; // ✅ NEW
+    private string selectedMoodCategory = "";
 
     private List<string> moodList = new();
     private List<string> tagList = new();
@@ -207,9 +205,7 @@ else
         _entries = await JournalService.GetAllEntriesAsync();
 
         foreach (var e in _entries)
-        {
             e.LoadTags();
-        }
 
         moodList = _entries.Select(e => e.PrimaryMood)
             .Where(m => !string.IsNullOrEmpty(m))
@@ -236,8 +232,10 @@ else
         if (!string.IsNullOrWhiteSpace(_searchText))
         {
             filtered = filtered.Where(x =>
+                (x.Title != null && x.Title.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
                 (x.Content != null && x.Content.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) ||
-                x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+                x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase))
+            );
         }
 
         if (fromDate != null)
@@ -249,7 +247,6 @@ else
         if (!string.IsNullOrEmpty(selectedMood))
             filtered = filtered.Where(x => x.PrimaryMood == selectedMood);
 
-        // ✅ NEW: FILTER BY MOOD CATEGORY
         if (!string.IsNullOrEmpty(selectedMoodCategory))
             filtered = filtered.Where(x => x.MoodCategory == selectedMoodCategory);
 
@@ -296,9 +293,7 @@ else
         _entries = await JournalService.GetAllEntriesAsync();
 
         foreach (var e in _entries)
-        {
             e.LoadTags();
-        }
 
         CalculatePages();
     }
@@ -316,8 +311,7 @@ else
             }
 
             var pdfBytes = PdfService.GenerateJournalPdf(entriesToExport);
-
-            var filePath = await FileService.SavePdfAsync(pdfBytes);
+            var filePath = await PdfFileSaver.SavePdfAsync(pdfBytes);
 
             await JS.InvokeVoidAsync("alert", $"✅ PDF saved!\n\nLocation:\n{filePath}");
         }

@@ -21,6 +21,29 @@ namespace ApplicationDevelopment.Service
             _db = new SQLiteAsyncConnection(dbPath);
 
             await _db.CreateTableAsync<JournalEntry>();
+
+            await EnsureMoodCategoryColumn();
+            await EnsureTitleColumn(); // ✅ ADD TITLE MIGRATION
+        }
+
+        private static async Task EnsureMoodCategoryColumn()
+        {
+            var columns = await _db!.GetTableInfoAsync("JournalEntry");
+
+            if (!columns.Any(c => c.Name == "MoodCategory"))
+            {
+                await _db.ExecuteAsync("ALTER TABLE JournalEntry ADD COLUMN MoodCategory TEXT");
+            }
+        }
+
+        private static async Task EnsureTitleColumn()
+        {
+            var columns = await _db!.GetTableInfoAsync("JournalEntry");
+
+            if (!columns.Any(c => c.Name == "Title"))
+            {
+                await _db.ExecuteAsync("ALTER TABLE JournalEntry ADD COLUMN Title TEXT");
+            }
         }
 
         public static async Task<List<JournalEntry>> GetAllEntriesAsync()
@@ -34,7 +57,7 @@ namespace ApplicationDevelopment.Service
             foreach (var e in entries)
             {
                 e.LoadTags();
-                e.SetMoodCategory(); // ✅ ADD
+                e.SetMoodCategory();
             }
 
             return entries;
@@ -45,7 +68,7 @@ namespace ApplicationDevelopment.Service
             await Init();
 
             entry.SyncTags();
-            entry.SetMoodCategory(); // ✅ ADD
+            entry.SetMoodCategory();
             await _db!.InsertAsync(entry);
         }
 
@@ -54,7 +77,7 @@ namespace ApplicationDevelopment.Service
             await Init();
 
             entry.SyncTags();
-            entry.SetMoodCategory(); // ✅ ADD
+            entry.SetMoodCategory();
             await _db!.UpdateAsync(entry);
         }
 
@@ -78,7 +101,7 @@ namespace ApplicationDevelopment.Service
             if (entry != null)
             {
                 entry.LoadTags();
-                entry.SetMoodCategory(); // ✅ ADD
+                entry.SetMoodCategory();
             }
 
             return entry;

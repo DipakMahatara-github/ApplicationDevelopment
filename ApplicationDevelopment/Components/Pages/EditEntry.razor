@@ -6,7 +6,7 @@
 
 @if (_entryToEdit == null)
 {
-<p></p>
+    <p></p>
 }
 else
 {
@@ -19,6 +19,11 @@ else
         <EditForm Model="@_entryToEdit" OnValidSubmit="HandleUpdateAsync">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger mb-2" />
+
+            <div class="form-group">
+                <label>Title</label>
+                <InputText @bind-Value="_entryToEdit.Title" class="form-control" />
+            </div>
 
             <div class="form-row">
                 <div class="form-group">
@@ -64,19 +69,19 @@ else
                 </div>
             </div>
 
-            <!-- ✅ PREDEFINED TAGS -->
+            <!-- TAGS -->
             <div class="form-group tags-group">
                 <label>Predefined Tags</label>
                 <div class="tag-list">
                     @foreach (var tag in predefinedTags)
                     {
-                    var isSelected = _entryToEdit.Tags.Contains(tag);
+                        var isSelected = _entryToEdit.Tags.Contains(tag);
 
-                    <button type="button"
-                            class="tag-btn @(isSelected ? "selected-tag" : "")"
-                            @onclick="() => TogglePredefinedTag(tag)">
-                        @tag
-                    </button>
+                        <button type="button"
+                                class="tag-btn @(isSelected ? "selected-tag" : "")"
+                                @onclick="() => TogglePredefinedTag(tag)">
+                            @tag
+                        </button>
                     }
                 </div>
 
@@ -89,15 +94,15 @@ else
                 <div class="tag-list mt-2">
                     @foreach (var tag in _entryToEdit.Tags)
                     {
-                    <span class="tag-badge">
+                        <span class="tag-badge">
                             @tag
-                        <span style="cursor:pointer;margin-left:6px;" @onclick="() => RemoveTag(tag)">×</span>
+                            <span style="cursor:pointer;margin-left:6px;" @onclick="() => RemoveTag(tag)">×</span>
                         </span>
                     }
                 </div>
             </div>
 
-            <!-- ✅ MARKDOWN EDITOR -->
+            <!-- CONTENT -->
             <div class="form-group">
                 <label>Journal Content (Markdown Supported)</label>
 
@@ -123,199 +128,197 @@ else
 }
 
 <style>
-    .entry-page {
-        display: flex;
-        justify-content: center;
-        margin: 2rem auto;
-    }
-    .entry-card {
-        width: 100%;
-        max-width: 700px;
-        background: #f0f8ff;
-        border-radius: 1rem;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .card-header {
-        background: linear-gradient(120deg, #00B4D8, #48CAE4);
-        color: white;
-        padding: 1.5rem;
-        text-align: center;
-        font-weight: 600;
-        font-size: 1.6rem;
-    }
-    .form-row {
-        display: flex;
-        gap: 1rem;
-        padding: 1rem;
-    }
-    .form-group {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 1rem;
-    }
-    label {
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #0077B6;
-    }
-    .mood-select {
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        border: 1px solid #ccc;
-    }
-    .tags-group {
-        padding: 0 1rem;
-    }
-    .tag-input {
-        display: flex;
-        gap: 0.5rem;
-    }
-    .btn-add {
-        background: #00B4D8;
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        padding: 0.4rem 0.8rem;
-    }
-    .tag-list {
-        margin-top: 0.5rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-    }
-    .tag-badge {
-        background: #ade8f4;
-        color: #0077B6;
-        padding: 0.3rem 0.7rem;
-        border-radius: 1rem;
-        font-size: 0.85rem;
-    }
-    .tag-btn {
-        border: 1px solid #00B4D8;
-        background: white;
-        color: #0077B6;
-        padding: 0.3rem 0.7rem;
-        border-radius: 1rem;
-        margin: 0.2rem;
-        cursor: pointer;
-        font-size: 0.85rem;
-    }
-    .selected-tag {
-        background: #00B4D8;
-        color: white;
-    }
-    .content-area {
-        width: 50%;
-        min-height: 200px;
-        border-radius: 0.75rem;
-        border: 1px solid #ccc;
-        padding: 0.75rem;
-        font-size: 1rem;
-        resize: vertical;
-    }
-    .form-actions {
-        padding: 1rem;
-        text-align: center;
-    }
-    .btn-save {
-        background: linear-gradient(120deg, #00B4D8, #48CAE4);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 0.75rem;
-        font-weight: 600;
-        font-size: 1rem;
-    }
-    .btn-cancel {
-        margin-left: 10px;
-        background: #ccc;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 0.75rem;
-    }
+/* SAME CSS AS ADDENTRY */
+.entry-page {
+    display: flex;
+    justify-content: center;
+    margin: 2rem auto;
+}
+.entry-card {
+    width: 100%;
+    max-width: 700px;
+    background: #f0f8ff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.card-header {
+    background: linear-gradient(120deg, #00B4D8, #48CAE4);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.6rem;
+}
+.form-row {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+}
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #0077B6;
+}
+.mood-select {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+}
+.tags-group {
+    padding: 0 1rem;
+}
+.tag-input {
+    display: flex;
+    gap: 0.5rem;
+}
+.btn-add {
+    background: #00B4D8;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+}
+.tag-list {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+.tag-badge {
+    background: #ade8f4;
+    color: #0077B6;
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+}
+.tag-btn {
+    border: 1px solid #00B4D8;
+    background: white;
+    color: #0077B6;
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    margin: 0.2rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.selected-tag {
+    background: #00B4D8;
+    color: white;
+}
+.content-area {
+    width: 50%;
+    min-height: 200px;
+    border-radius: 0.75rem;
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    font-size: 1rem;
+    resize: vertical;
+}
+.form-actions {
+    padding: 1rem;
+    text-align: center;
+}
+.btn-save {
+    background: linear-gradient(120deg, #00B4D8, #48CAE4);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+.btn-cancel {
+    margin-left: 10px;
+    background: #ccc;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.75rem;
+}
 </style>
 
 @code {
-[Parameter] public Guid Id { get; set; }
-private JournalEntry? _entryToEdit;
-private string _markdownPreview = "";
+    [Parameter] public Guid Id { get; set; }
+    private JournalEntry? _entryToEdit;
+    private string _markdownPreview = "";
 
-private List<string> predefinedTags = new()
-{
-"#Work", "#Health", "#Travel", "#Study", "#Family", "#Friends", "#Fitness", "#Finance", "#Mood"
-};
+    private List<string> predefinedTags = new()
+    {
+        "#Work", "#Health", "#Travel", "#Study", "#Family", "#Friends", "#Fitness", "#Finance", "#Mood"
+    };
 
-protected override async Task OnInitializedAsync()
-{
-if (!AuthService.IsLoggedIn())
-{
-NavManager.NavigateTo("/login", true);
-return;
-}
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn())
+        {
+            NavManager.NavigateTo("/login", true);
+            return;
+        }
 
-_entryToEdit = await JournalService.GetEntryByIdAsync(Id);
-_entryToEdit?.LoadTags();
+        _entryToEdit = await JournalService.GetEntryByIdAsync(Id);
+        _entryToEdit?.LoadTags();
 
-if (_entryToEdit != null)
-{
-_markdownPreview = Markdown.ToHtml(_entryToEdit.Content ?? "");
-}
-}
+        if (_entryToEdit != null)
+            _markdownPreview = Markdown.ToHtml(_entryToEdit.Content ?? "");
+    }
 
-private void UpdatePreview(ChangeEventArgs e)
-{
-var text = _entryToEdit?.Content ?? "";
-_markdownPreview = Markdown.ToHtml(text);
-}
+    private void UpdatePreview(ChangeEventArgs e)
+    {
+        var text = _entryToEdit?.Content ?? "";
+        _markdownPreview = Markdown.ToHtml(text);
+    }
 
-private void TogglePredefinedTag(string tag)
-{
-if (_entryToEdit!.Tags.Contains(tag))
-_entryToEdit.Tags.Remove(tag);
-else
-_entryToEdit.Tags.Add(tag);
-}
+    private void TogglePredefinedTag(string tag)
+    {
+        if (_entryToEdit!.Tags.Contains(tag))
+            _entryToEdit.Tags.Remove(tag);
+        else
+            _entryToEdit.Tags.Add(tag);
+    }
 
-private void AddTag()
-{
-if (string.IsNullOrWhiteSpace(_entryToEdit?.CurrentTagInput))
-return;
+    private void AddTag()
+    {
+        if (string.IsNullOrWhiteSpace(_entryToEdit?.CurrentTagInput))
+            return;
 
-var tags = _entryToEdit.CurrentTagInput.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        var tags = _entryToEdit.CurrentTagInput.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-foreach (var tag in tags)
-{
-var cleanTag = tag.Trim();
-if (!cleanTag.StartsWith("#"))
-cleanTag = "#" + cleanTag;
+        foreach (var tag in tags)
+        {
+            var cleanTag = tag.Trim();
+            if (!cleanTag.StartsWith("#"))
+                cleanTag = "#" + cleanTag;
 
-if (!_entryToEdit.Tags.Contains(cleanTag))
-_entryToEdit.Tags.Add(cleanTag);
-}
+            if (!_entryToEdit.Tags.Contains(cleanTag))
+                _entryToEdit.Tags.Add(cleanTag);
+        }
 
-_entryToEdit.CurrentTagInput = "";
-StateHasChanged();
-}
+        _entryToEdit.CurrentTagInput = "";
+        StateHasChanged();
+    }
 
-private void RemoveTag(string tag)
-{
-_entryToEdit!.Tags.Remove(tag);
-}
+    private void RemoveTag(string tag)
+    {
+        _entryToEdit!.Tags.Remove(tag);
+    }
 
-private async Task HandleUpdateAsync()
-{
-    _entryToEdit!.SyncTags();
-    _entryToEdit.SetMoodCategory(); // ✅ ADD
+    private async Task HandleUpdateAsync()
+    {
+        _entryToEdit!.SyncTags();
+        _entryToEdit.SetMoodCategory();
 
-    await JournalService.UpdateEntryAsync(_entryToEdit);
-    NavManager.NavigateTo("/history");
-}
+        await JournalService.UpdateEntryAsync(_entryToEdit);
+        NavManager.NavigateTo("/history");
+    }
 
-
-private void Cancel()
-{
-NavManager.NavigateTo("/history");
-}
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/history");
+    }
 }

@@ -12,10 +12,6 @@
 		<data>
 		8x0ZHZ0zQbpbh0gklwuAwHFL898=
 		</data>
-		<key>Resources/MauiInfo.plist</key>
-		<data>
-		A/74dbGgxu/fUONI00Bycn7+qco=
-		</data>
 		<key>Resources/MonoTouchDebugConfiguration.txt</key>
 		<data>
 		oowkf1sL6T19nanXUObgmuayWqM=
@@ -83,14 +79,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			WhJkNkk0HSzhZX2ikGFBmrRp9bp1lnhQtypnv+G+WlM=
+			okwPqqE2+gpaeoK64KCAIKW/YvGoUoSyG/Fijee2S5I=
 			</data>
 		</dict>
 		<key>MonoBundle/ApplicationDevelopment.pdb</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Qtqdqh7XKIVurXmH2EG7UKx0msoeDlKUJefos9BINwk=
+			xKv8b3Z6Jh4TK8pAYgllC5Cd4J3tuXTEN6I4XikZ0IY=
 			</data>
 		</dict>
 		<key>MonoBundle/BouncyCastle.Cryptography.dll</key>
@@ -1995,13 +1991,6 @@
 			<key>hash2</key>
 			<data>
 			s9O9YNATb7VyzLZHhLgE2zNmzpv/qvDMkuBrxKH4Ftc=
-			</data>
-		</dict>
-		<key>Resources/MauiInfo.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			UEORARmYMQB21vcObyk2tL7rhjGOSCGHQz3UGRUssW0=
 			</data>
 		</dict>
 		<key>Resources/MonoTouchDebugConfiguration.txt</key>

@@ -1,7 +1,5 @@
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
 using ApplicationDevelopment.Model;
+using iText.Kernel.Pdf;
 
 namespace ApplicationDevelopment.Service
 {
@@ -9,48 +7,51 @@ namespace ApplicationDevelopment.Service
     {
         public byte[] GenerateJournalPdf(List<JournalEntry> entries)
         {
-            using var ms = new MemoryStream();
+            using var stream = new MemoryStream();
 
-            var writer = new PdfWriter(ms);
+            var writer = new PdfWriter(stream);
             var pdf = new PdfDocument(writer);
-            var document = new Document(pdf);
+            var document = new iText.Layout.Document(pdf);
 
             // ✅ Title
-            document.Add(new Paragraph("Journal History Report")
-                .SetFontSize(18));
+            document.Add(new iText.Layout.Element.Paragraph("Journal History Report")
+                .SetFontSize(20)
+                .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER));
 
-            document.Add(new Paragraph($"Generated on: {DateTime.Now}")
-                .SetFontSize(10));
-
-            document.Add(new Paragraph(" "));
+            document.Add(new iText.Layout.Element.Paragraph(
+                $"Generated on: {DateTime.Now:dd MMM yyyy HH:mm}\n"));
 
             foreach (var entry in entries)
             {
-                document.Add(new Paragraph($"Date: {entry.CreatedAt:MMM dd, yyyy HH:mm}"));
+                document.Add(new iText.Layout.Element.Paragraph(
+                    "--------------------------------------------------"));
 
-                // ✅ Mood text (Primary + Secondary 1 + Secondary 2)
-                var moodText = entry.PrimaryMood ?? "";
+                document.Add(new iText.Layout.Element.Paragraph(
+                    $"Date: {entry.CreatedAt:dd MMM yyyy HH:mm}"));
 
-                if (!string.IsNullOrEmpty(entry.SecondaryMood1))
-                    moodText += " / " + entry.SecondaryMood1;
+                if (!string.IsNullOrWhiteSpace(entry.Title))
+                    document.Add(new iText.Layout.Element.Paragraph(
+                        $"Title: {entry.Title}"));
 
-                if (!string.IsNullOrEmpty(entry.SecondaryMood2))
-                    moodText += " / " + entry.SecondaryMood2;
+                document.Add(new iText.Layout.Element.Paragraph(
+                    $"Mood: {entry.PrimaryMood} / {entry.SecondaryMood1} / {entry.SecondaryMood2}"));
 
-                document.Add(new Paragraph($"Mood: {moodText}"));
+                document.Add(new iText.Layout.Element.Paragraph(
+                    $"Mood Category: {entry.MoodCategory}"));
 
-                document.Add(new Paragraph($"Content: {entry.Content ?? ""}"));
+                document.Add(new iText.Layout.Element.Paragraph(
+                    $"Content: {entry.Content}"));
 
                 if (entry.Tags != null && entry.Tags.Any())
-                {
-                    document.Add(new Paragraph("Tags: " + string.Join(", ", entry.Tags)));
-                }
+                    document.Add(new iText.Layout.Element.Paragraph(
+                        $"Tags: {string.Join(", ", entry.Tags)}"));
 
-                document.Add(new Paragraph("--------------------------------------------------"));
+                document.Add(new iText.Layout.Element.Paragraph("\n"));
             }
 
             document.Close();
-            return ms.ToArray();
+
+            return stream.ToArray();
         }
     }
 }

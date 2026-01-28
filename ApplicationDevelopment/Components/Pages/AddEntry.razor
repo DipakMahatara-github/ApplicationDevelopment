@@ -24,6 +24,12 @@ else
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger mb-2" />
 
+            <!-- ✅ TITLE -->
+            <div class="form-group">
+                <label>Title</label>
+                <InputText @bind-Value="_newEntry.Title" class="form-control" placeholder="Enter title..." />
+            </div>
+
             <div class="form-row">
                 <div class="form-group">
                     <label>Primary Mood</label>
@@ -68,7 +74,7 @@ else
                 </div>
             </div>
 
-            <!-- ✅ PREDEFINED TAGS -->
+            <!-- TAGS -->
             <div class="form-group tags-group">
                 <label>Predefined Tags</label>
                 <div class="tag-list">
@@ -101,7 +107,7 @@ else
                 </div>
             </div>
 
-            <!-- ✅ MARKDOWN EDITOR -->
+            <!-- CONTENT -->
             <div class="form-group">
                 <label>Journal Content (Markdown Supported)</label>
 
@@ -303,11 +309,10 @@ label {
     private async Task HandleSaveAsync()
     {
         _newEntry.SyncTags();
-        _newEntry.SetMoodCategory(); // ✅ ADD
+        _newEntry.SetMoodCategory();
 
         await JournalService.AddEntryAsync(_newEntry);
         _newEntry = new JournalEntry();
         NavManager.NavigateTo("/history");
     }
-
 }

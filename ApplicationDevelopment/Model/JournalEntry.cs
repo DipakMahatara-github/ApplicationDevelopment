@@ -1,6 +1,6 @@
 using SQLite;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApplicationDevelopment.Model
 {
@@ -11,15 +11,17 @@ namespace ApplicationDevelopment.Model
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        // ✅ TITLE
+        public string? Title { get; set; }
+
         // ✅ PRIMARY MOOD
-        [Required]
         public string? PrimaryMood { get; set; }
 
-        // ✅ SECONDARY MOODS (UP TO 2)
+        // ✅ SECONDARY MOODS
         public string? SecondaryMood1 { get; set; }
         public string? SecondaryMood2 { get; set; }
 
-        // ✅ MOOD CATEGORY (Positive / Neutral / Negative)
+        // ✅ MOOD CATEGORY
         public string? MoodCategory { get; set; }
 
         // ✅ CONTENT
@@ -37,13 +39,11 @@ namespace ApplicationDevelopment.Model
         [Ignore]
         public string CurrentTagInput { get; set; } = "";
 
-        // ✅ Sync tags before saving
         public void SyncTags()
         {
             TagsJson = JsonSerializer.Serialize(Tags);
         }
 
-        // ✅ Load tags after reading
         public void LoadTags()
         {
             Tags = string.IsNullOrEmpty(TagsJson)
