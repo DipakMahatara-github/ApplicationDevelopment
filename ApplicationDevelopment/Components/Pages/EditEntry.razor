@@ -306,10 +306,13 @@ _entryToEdit!.Tags.Remove(tag);
 
 private async Task HandleUpdateAsync()
 {
-_entryToEdit!.SyncTags();
-await JournalService.UpdateEntryAsync(_entryToEdit);
-NavManager.NavigateTo("/history");
+    _entryToEdit!.SyncTags();
+    _entryToEdit.SetMoodCategory(); // ✅ ADD
+
+    await JournalService.UpdateEntryAsync(_entryToEdit);
+    NavManager.NavigateTo("/history");
 }
+
 
 private void Cancel()
 {

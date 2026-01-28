@@ -13,7 +13,6 @@ namespace ApplicationDevelopment.Service
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "journal.db3");
 
-            // ✅ NORMAL DB INITIALIZATION (NO TEMP DELETE)
             if (!File.Exists(dbPath))
             {
                 File.Create(dbPath).Close();
@@ -21,7 +20,6 @@ namespace ApplicationDevelopment.Service
 
             _db = new SQLiteAsyncConnection(dbPath);
 
-            // ✅ Create table if not exists
             await _db.CreateTableAsync<JournalEntry>();
         }
 
@@ -33,9 +31,11 @@ namespace ApplicationDevelopment.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
-            // ✅ Load tags from JSON
             foreach (var e in entries)
+            {
                 e.LoadTags();
+                e.SetMoodCategory(); // ✅ ADD
+            }
 
             return entries;
         }
@@ -44,7 +44,8 @@ namespace ApplicationDevelopment.Service
         {
             await Init();
 
-            entry.SyncTags(); // ✅ Save tags as JSON
+            entry.SyncTags();
+            entry.SetMoodCategory(); // ✅ ADD
             await _db!.InsertAsync(entry);
         }
 
@@ -52,7 +53,8 @@ namespace ApplicationDevelopment.Service
         {
             await Init();
 
-            entry.SyncTags(); // ✅ Update tags JSON
+            entry.SyncTags();
+            entry.SetMoodCategory(); // ✅ ADD
             await _db!.UpdateAsync(entry);
         }
 
@@ -73,7 +75,12 @@ namespace ApplicationDevelopment.Service
                 .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
 
-            entry?.LoadTags(); // ✅ Load tags after fetching
+            if (entry != null)
+            {
+                entry.LoadTags();
+                entry.SetMoodCategory(); // ✅ ADD
+            }
+
             return entry;
         }
     }

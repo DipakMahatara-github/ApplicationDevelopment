@@ -28,15 +28,17 @@ namespace ApplicationDevelopment.Service
             {
                 document.Add(new Paragraph($"Date: {entry.CreatedAt:MMM dd, yyyy HH:mm}"));
 
-                string moods = entry.PrimaryMood ?? "";
+                // ✅ Mood text (Primary + Secondary 1 + Secondary 2)
+                var moodText = entry.PrimaryMood ?? "";
 
                 if (!string.IsNullOrEmpty(entry.SecondaryMood1))
-                    moods += " / " + entry.SecondaryMood1;
+                    moodText += " / " + entry.SecondaryMood1;
 
                 if (!string.IsNullOrEmpty(entry.SecondaryMood2))
-                    moods += " / " + entry.SecondaryMood2;
+                    moodText += " / " + entry.SecondaryMood2;
 
-                document.Add(new Paragraph($"Mood: {moods}"));
+                document.Add(new Paragraph($"Mood: {moodText}"));
+
                 document.Add(new Paragraph($"Content: {entry.Content ?? ""}"));
 
                 if (entry.Tags != null && entry.Tags.Any())

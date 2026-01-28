@@ -1,6 +1,7 @@
 @page "/history"
 @using ApplicationDevelopment.Model
 @using ApplicationDevelopment.Service
+@using Markdig
 @inject NavigationManager NavManager
 @inject IJSRuntime JS 
 @inject PdfExportService PdfService
@@ -35,6 +36,14 @@ else
             {
                 <option value="@mood">@mood</option>
             }
+        </select>
+
+        <!-- ✅ NEW: MOOD CATEGORY FILTER -->
+        <select class="form-control" @bind="selectedMoodCategory">
+            <option value="">All Mood Categories</option>
+            <option value="Positive">Positive</option>
+            <option value="Neutral">Neutral</option>
+            <option value="Negative">Negative</option>
         </select>
 
         <select class="form-control" @bind="selectedTag">
@@ -75,13 +84,21 @@ else
                             </div>
                         </div>
 
-                        <p class="mt-2 lead">@item.Content</p>
+                        <!-- ✅ MARKDOWN RENDERED CONTENT -->
+                        <div class="mt-2 lead">
+                            @((MarkupString)Markdown.ToHtml(item.Content ?? ""))
+                        </div>
 
                         <p class="mb-2">
                             <strong>Mood:</strong>
                             @item.PrimaryMood
                             @(string.IsNullOrEmpty(item.SecondaryMood1) ? "" : " / " + item.SecondaryMood1)
                             @(string.IsNullOrEmpty(item.SecondaryMood2) ? "" : " / " + item.SecondaryMood2)
+                        </p>
+
+                        <!-- ✅ NEW: MOOD CATEGORY DISPLAY -->
+                        <p class="mb-2">
+                            <strong>Mood Category:</strong> @item.MoodCategory
                         </p>
 
                         <div>
@@ -167,6 +184,7 @@ else
     private DateTime? toDate;
     private string selectedMood = "";
     private string selectedTag = "";
+    private string selectedMoodCategory = ""; // ✅ NEW
 
     private List<string> moodList = new();
     private List<string> tagList = new();
@@ -189,10 +207,11 @@ else
         _entries = await JournalService.GetAllEntriesAsync();
 
         foreach (var e in _entries)
+        {
             e.LoadTags();
+        }
 
-        moodList = _entries
-            .SelectMany(e => new[] { e.PrimaryMood, e.SecondaryMood1, e.SecondaryMood2 })
+        moodList = _entries.Select(e => e.PrimaryMood)
             .Where(m => !string.IsNullOrEmpty(m))
             .Distinct()
             .ToList();
@@ -214,7 +233,6 @@ else
     {
         IEnumerable<JournalEntry> filtered = _entries;
 
-        // ✅ Search (content + tags)
         if (!string.IsNullOrWhiteSpace(_searchText))
         {
             filtered = filtered.Where(x =>
@@ -222,23 +240,19 @@ else
                 x.Tags.Any(t => t.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
         }
 
-        // ✅ Date filter
         if (fromDate != null)
             filtered = filtered.Where(x => x.CreatedAt.Date >= fromDate.Value.Date);
 
         if (toDate != null)
             filtered = filtered.Where(x => x.CreatedAt.Date <= toDate.Value.Date);
 
-        // ✅ Mood filter (Primary + Secondary)
         if (!string.IsNullOrEmpty(selectedMood))
-        {
-            filtered = filtered.Where(x =>
-                x.PrimaryMood == selectedMood ||
-                x.SecondaryMood1 == selectedMood ||
-                x.SecondaryMood2 == selectedMood);
-        }
+            filtered = filtered.Where(x => x.PrimaryMood == selectedMood);
 
-        // ✅ Tag filter
+        // ✅ NEW: FILTER BY MOOD CATEGORY
+        if (!string.IsNullOrEmpty(selectedMoodCategory))
+            filtered = filtered.Where(x => x.MoodCategory == selectedMoodCategory);
+
         if (!string.IsNullOrEmpty(selectedTag))
             filtered = filtered.Where(x => x.Tags.Contains(selectedTag));
 
@@ -282,7 +296,9 @@ else
         _entries = await JournalService.GetAllEntriesAsync();
 
         foreach (var e in _entries)
+        {
             e.LoadTags();
+        }
 
         CalculatePages();
     }

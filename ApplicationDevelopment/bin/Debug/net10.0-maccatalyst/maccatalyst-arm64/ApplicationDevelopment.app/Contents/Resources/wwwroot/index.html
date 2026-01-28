@@ -52,6 +52,33 @@
     };
 
     // ================================
+    // ✅ MOOD CATEGORY CHART (NEW)
+    // ================================
+    window.renderMoodCategoryChart = (labels, values) => {
+        const ctx = document.getElementById('moodCategoryChart');
+        if (!ctx) return;
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#4CAF50', // Positive
+                        '#FFC107', // Neutral
+                        '#F44336'  // Negative
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    };
+
+    // ================================
     // ✅ ENTRIES OVER TIME CHART
     // ================================
     window.renderEntryChart = (labels, values) => {
@@ -78,7 +105,7 @@
     };
 
     // ================================
-    // ✅ MOST USED TAGS CHART (NEW)
+    // ✅ MOST USED TAGS CHART
     // ================================
     window.renderTagChart = (labels, values) => {
         const ctx = document.getElementById('tagChart');
@@ -108,7 +135,7 @@
     };
 
     // ================================
-    // ✅ WORD COUNT TREND CHART (NEW)
+    // ✅ WORD COUNT TREND CHART
     // ================================
     window.renderWordChart = (labels, values) => {
         const ctx = document.getElementById('wordChart');
@@ -145,10 +172,10 @@
 
             if (document.body.classList.contains("dark-theme")) {
                 localStorage.setItem("theme", "dark");
-                return true; // dark mode ON
+                return true;
             } else {
                 localStorage.setItem("theme", "light");
-                return false; // dark mode OFF
+                return false;
             }
         },
 
@@ -166,8 +193,6 @@
 
     window.themeManager.loadTheme();
 </script>
-
-<!-- ✅ END THEME SCRIPT -->
 
 <script src="_framework/blazor.webview.js" autostart="false"></script>
 

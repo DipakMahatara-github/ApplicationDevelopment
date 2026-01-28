@@ -28,6 +28,18 @@
                 }
             </select>
         </div>
+
+        <!-- ✅ NEW: MOOD CATEGORY FILTER -->
+        <div>
+            <label>Category:</label>
+            <select @bind="selectedMoodCategory">
+                <option value="">All</option>
+                <option value="Positive">Positive</option>
+                <option value="Neutral">Neutral</option>
+                <option value="Negative">Negative</option>
+            </select>
+        </div>
+
         <button class="btn-filter" @onclick="ApplyFilters">Apply</button>
     </div>
 
@@ -43,6 +55,23 @@
             <p>@mostCommonMood</p>
         </div>
 
+        <div class="stat-card">
+            <h4>😊 Positive</h4>
+            <p>@positiveCount</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>😐 Neutral</h4>
+            <p>@neutralCount</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>😔 Negative</h4>
+            <p>@negativeCount</p>
+        </div>
+    </div>
+
+    <div class="stats-grid">
         <div class="stat-card">
             <h4>🔥 Current Streak</h4>
             <p>@currentStreak days</p>
@@ -64,6 +93,11 @@
         <div class="chart-card big-chart">
             <h4>Mood Distribution</h4>
             <canvas id="moodChart"></canvas>
+        </div>
+
+        <div class="chart-card big-chart">
+            <h4>Mood Category Distribution</h4>
+            <canvas id="moodCategoryChart"></canvas>
         </div>
 
         <div class="chart-card big-chart">
@@ -198,12 +232,18 @@
     private string mostCommonMood = "None";
     private int currentStreak;
     private int longestStreak;
-    private int missedDays; // ✅ NEW
+    private int missedDays;
     private string mostActiveDay = "None";
+
+    // ✅ Mood Category Counts
+    private int positiveCount;
+    private int neutralCount;
+    private int negativeCount;
 
     private DateTime? fromDate;
     private DateTime? toDate;
     private string selectedMood = "";
+    private string selectedMoodCategory = ""; // ✅ NEW
     private List<string> moodList = new();
 
     protected override async Task OnInitializedAsync()
@@ -243,6 +283,9 @@
         if (!string.IsNullOrEmpty(selectedMood))
             filteredEntries = filteredEntries.Where(e => e.PrimaryMood == selectedMood).ToList();
 
+        if (!string.IsNullOrEmpty(selectedMoodCategory))
+            filteredEntries = filteredEntries.Where(e => e.MoodCategory == selectedMoodCategory).ToList();
+
         CalculateStats();
         RenderCharts();
     }
@@ -250,6 +293,10 @@
     private void CalculateStats()
     {
         totalEntries = filteredEntries.Count;
+
+        positiveCount = filteredEntries.Count(e => e.MoodCategory == "Positive");
+        neutralCount = filteredEntries.Count(e => e.MoodCategory == "Neutral");
+        negativeCount = filteredEntries.Count(e => e.MoodCategory == "Negative");
 
         if (filteredEntries.Any())
         {
@@ -260,7 +307,7 @@
 
             CalculateStreaks();
             CalculateMostActiveDay();
-            CalculateMissedDays(); // ✅ NEW
+            CalculateMissedDays();
         }
         else
         {
@@ -268,7 +315,7 @@
             currentStreak = 0;
             longestStreak = 0;
             mostActiveDay = "None";
-            missedDays = 0; // ✅ NEW
+            missedDays = 0;
         }
     }
 
@@ -305,12 +352,9 @@
 
         longestStreak = maxStreak;
 
-        currentStreak = dates.Last() == DateTime.Today
-            ? streak
-            : 0;
+        currentStreak = dates.Last() == DateTime.Today ? streak : 0;
     }
 
-    // ✅ NEW FEATURE: MISSED DAYS
     private void CalculateMissedDays()
     {
         var dates = filteredEntries
@@ -329,7 +373,6 @@
         var endDate = DateTime.Today;
 
         int totalDays = (endDate - startDate).Days + 1;
-
         missedDays = totalDays - dates.Count;
 
         if (missedDays < 0)
@@ -349,7 +392,7 @@
 
     private async Task RenderCharts()
     {
-        // ✅ Mood Distribution
+        // Mood Distribution
         var moodGroups = filteredEntries
             .GroupBy(e => e.PrimaryMood)
             .Select(g => new { Mood = g.Key ?? "Unknown", Count = g.Count() })
@@ -358,7 +401,11 @@
         var moodLabels = moodGroups.Select(m => m.Mood).ToArray();
         var moodValues = moodGroups.Select(m => m.Count).ToArray();
 
-        // ✅ Entries Over Time
+        // Mood Category Distribution
+        var categoryLabels = new[] { "Positive", "Neutral", "Negative" };
+        var categoryValues = new[] { positiveCount, neutralCount, negativeCount };
+
+        // Entries Over Time
         var dayGroups = filteredEntries
             .GroupBy(e => e.CreatedAt.Date)
             .OrderBy(g => g.Key)
@@ -368,7 +415,7 @@
         var dayLabels = dayGroups.Select(d => d.Date).ToArray();
         var dayValues = dayGroups.Select(d => d.Count).ToArray();
 
-        // ✅ Most Used Tags
+        // Tags
         var tagGroups = filteredEntries
             .SelectMany(e => e.Tags)
             .GroupBy(t => t)
@@ -379,7 +426,7 @@
         var tagLabels = tagGroups.Select(t => t.Tag).ToArray();
         var tagValues = tagGroups.Select(t => t.Count).ToArray();
 
-        // ✅ Word Count Trend
+        // Word Count
         var wordGroups = filteredEntries
             .GroupBy(e => e.CreatedAt.Date)
             .OrderBy(g => g.Key)
@@ -394,6 +441,7 @@
         var wordValues = wordGroups.Select(w => w.Words).ToArray();
 
         await JS.InvokeVoidAsync("renderMoodChart", moodLabels, moodValues);
+        await JS.InvokeVoidAsync("renderMoodCategoryChart", categoryLabels, categoryValues);
         await JS.InvokeVoidAsync("renderEntryChart", dayLabels, dayValues);
         await JS.InvokeVoidAsync("renderTagChart", tagLabels, tagValues);
         await JS.InvokeVoidAsync("renderWordChart", wordLabels, wordValues);

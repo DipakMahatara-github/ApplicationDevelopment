@@ -303,8 +303,11 @@ label {
     private async Task HandleSaveAsync()
     {
         _newEntry.SyncTags();
+        _newEntry.SetMoodCategory(); // ✅ ADD
+
         await JournalService.AddEntryAsync(_newEntry);
         _newEntry = new JournalEntry();
         NavManager.NavigateTo("/history");
     }
+
 }
