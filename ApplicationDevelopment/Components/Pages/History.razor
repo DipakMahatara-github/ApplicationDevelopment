@@ -76,8 +76,12 @@ else
                         </div>
 
                         <p class="mt-2 lead">@item.Content</p>
+
                         <p class="mb-2">
-                            <strong>Mood:</strong> @item.PrimaryMood @(string.IsNullOrEmpty(item.SecondaryMood) ? "" : " / " + item.SecondaryMood)
+                            <strong>Mood:</strong>
+                            @item.PrimaryMood
+                            @(string.IsNullOrEmpty(item.SecondaryMood1) ? "" : " / " + item.SecondaryMood1)
+                            @(string.IsNullOrEmpty(item.SecondaryMood2) ? "" : " / " + item.SecondaryMood2)
                         </p>
 
                         <div>
@@ -185,11 +189,10 @@ else
         _entries = await JournalService.GetAllEntriesAsync();
 
         foreach (var e in _entries)
-        {
             e.LoadTags();
-        }
 
-        moodList = _entries.Select(e => e.PrimaryMood)
+        moodList = _entries
+            .SelectMany(e => new[] { e.PrimaryMood, e.SecondaryMood1, e.SecondaryMood2 })
             .Where(m => !string.IsNullOrEmpty(m))
             .Distinct()
             .ToList();
@@ -226,9 +229,14 @@ else
         if (toDate != null)
             filtered = filtered.Where(x => x.CreatedAt.Date <= toDate.Value.Date);
 
-        // ✅ Mood filter
+        // ✅ Mood filter (Primary + Secondary)
         if (!string.IsNullOrEmpty(selectedMood))
-            filtered = filtered.Where(x => x.PrimaryMood == selectedMood);
+        {
+            filtered = filtered.Where(x =>
+                x.PrimaryMood == selectedMood ||
+                x.SecondaryMood1 == selectedMood ||
+                x.SecondaryMood2 == selectedMood);
+        }
 
         // ✅ Tag filter
         if (!string.IsNullOrEmpty(selectedTag))
@@ -274,9 +282,7 @@ else
         _entries = await JournalService.GetAllEntriesAsync();
 
         foreach (var e in _entries)
-        {
             e.LoadTags();
-        }
 
         CalculatePages();
     }

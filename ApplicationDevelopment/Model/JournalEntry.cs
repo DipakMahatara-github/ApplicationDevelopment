@@ -6,38 +6,41 @@ namespace ApplicationDevelopment.Model
 {
     public class JournalEntry
     {
-        // ✅ PRIMARY KEY
         [PrimaryKey]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // ✅ MOODS
+        // ✅ PRIMARY MOOD
+        [Required]
         public string? PrimaryMood { get; set; }
-        public string? SecondaryMood { get; set; }
+
+        // ✅ SECONDARY MOODS (UP TO 2)
+        public string? SecondaryMood1 { get; set; }
+        public string? SecondaryMood2 { get; set; }
 
         // ✅ CONTENT
         [Required(ErrorMessage = "Please write something.")]
         public string? Content { get; set; }
 
-        // ✅ TAGS STORED IN SQLITE (JSON STRING)
+        // ✅ TAGS (JSON stored in DB)
         public string TagsJson { get; set; } = "[]";
 
-        // ✅ TAG LIST (NOT STORED IN DB)
+        // ✅ TAG LIST (NOT stored in DB)
         [Ignore]
         public List<string> Tags { get; set; } = new();
 
-        // ✅ INPUT FIELD (NOT STORED IN DB)
+        // ✅ TAG INPUT (NOT stored in DB)
         [Ignore]
         public string CurrentTagInput { get; set; } = "";
 
-        // ✅ Convert List → JSON before saving
+        // ✅ Sync tags before saving
         public void SyncTags()
         {
             TagsJson = JsonSerializer.Serialize(Tags);
         }
 
-        // ✅ Convert JSON → List after loading
+        // ✅ Load tags after reading
         public void LoadTags()
         {
             Tags = string.IsNullOrEmpty(TagsJson)

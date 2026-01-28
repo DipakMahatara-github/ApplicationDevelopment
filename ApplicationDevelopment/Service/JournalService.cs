@@ -13,7 +13,7 @@ namespace ApplicationDevelopment.Service
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "journal.db3");
 
-            // ✅ If DB is missing, recreate it safely
+            // ✅ NORMAL DB INITIALIZATION (NO TEMP DELETE)
             if (!File.Exists(dbPath))
             {
                 File.Create(dbPath).Close();

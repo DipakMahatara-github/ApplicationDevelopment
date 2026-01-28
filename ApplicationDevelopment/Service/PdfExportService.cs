@@ -27,7 +27,16 @@ namespace ApplicationDevelopment.Service
             foreach (var entry in entries)
             {
                 document.Add(new Paragraph($"Date: {entry.CreatedAt:MMM dd, yyyy HH:mm}"));
-                document.Add(new Paragraph($"Mood: {entry.PrimaryMood} {(!string.IsNullOrEmpty(entry.SecondaryMood) ? "/ " + entry.SecondaryMood : "")}"));
+
+                string moods = entry.PrimaryMood ?? "";
+
+                if (!string.IsNullOrEmpty(entry.SecondaryMood1))
+                    moods += " / " + entry.SecondaryMood1;
+
+                if (!string.IsNullOrEmpty(entry.SecondaryMood2))
+                    moods += " / " + entry.SecondaryMood2;
+
+                document.Add(new Paragraph($"Mood: {moods}"));
                 document.Add(new Paragraph($"Content: {entry.Content ?? ""}"));
 
                 if (entry.Tags != null && entry.Tags.Any())

@@ -33,13 +33,34 @@ else
                         <option value="Calm">Calm</option>
                         <option value="Sad">Sad</option>
                         <option value="Angry">Angry</option>
+                        <option value="Excited">Excited</option>
+                        <option value="Tired">Tired</option>
+                        <option value="Grateful">Grateful</option>
                     </InputSelect>
                 </div>
 
                 <div class="form-group">
-                    <label>Secondary Mood</label>
-                    <InputSelect @bind-Value="_newEntry.SecondaryMood" class="mood-select secondary">
+                    <label>Secondary Mood 1</label>
+                    <InputSelect @bind-Value="_newEntry.SecondaryMood1" class="mood-select secondary">
                         <option value="">None</option>
+                        <option value="Happy">Happy</option>
+                        <option value="Calm">Calm</option>
+                        <option value="Sad">Sad</option>
+                        <option value="Angry">Angry</option>
+                        <option value="Excited">Excited</option>
+                        <option value="Tired">Tired</option>
+                        <option value="Grateful">Grateful</option>
+                    </InputSelect>
+                </div>
+
+                <div class="form-group">
+                    <label>Secondary Mood 2</label>
+                    <InputSelect @bind-Value="_newEntry.SecondaryMood2" class="mood-select secondary">
+                        <option value="">None</option>
+                        <option value="Happy">Happy</option>
+                        <option value="Calm">Calm</option>
+                        <option value="Sad">Sad</option>
+                        <option value="Angry">Angry</option>
                         <option value="Excited">Excited</option>
                         <option value="Tired">Tired</option>
                         <option value="Grateful">Grateful</option>
@@ -222,15 +243,7 @@ label {
 
     private List<string> predefinedTags = new()
     {
-        "#Work",
-        "#Health",
-        "#Travel",
-        "#Study",
-        "#Family",
-        "#Friends",
-        "#Fitness",
-        "#Finance",
-        "#Mood"
+        "#Work", "#Health", "#Travel", "#Study", "#Family", "#Friends", "#Fitness", "#Finance", "#Mood"
     };
 
     protected override Task OnInitializedAsync()
