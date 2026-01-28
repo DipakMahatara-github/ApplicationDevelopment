@@ -4,25 +4,31 @@
 
 <div class="auth-page">
     <div class="auth-card">
+        <!-- Login page heading -->
         <h2>🔐 Login</h2>
 
+        <!-- Display error message if login fails -->
         @if (!string.IsNullOrEmpty(_errorMessage))
         {
             <div class="auth-error">@_errorMessage</div>
         }
 
+        <!-- Username input field -->
         <div class="auth-group">
             <label>Username</label>
             <input class="auth-input" @bind="_username" placeholder="Enter username" />
         </div>
 
+        <!-- Password input field -->
         <div class="auth-group">
             <label>Password</label>
             <input type="password" class="auth-input" @bind="_password" placeholder="Enter password" />
         </div>
 
+        <!-- Login button triggers authentication -->
         <button class="auth-btn" @onclick="LoginAsync">Login</button>
 
+        <!-- Link to registration page -->
         <div class="auth-link">
             Don't have an account? <a href="/register">Create one</a>
         </div>
@@ -30,6 +36,7 @@
 </div>
 
 <style>
+/* Center the login card on the page */
 .auth-page {
     display: flex;
     justify-content: center;
@@ -37,6 +44,7 @@
     height: 80vh;
 }
 
+/* Login card styling */
 .auth-card {
     width: 360px;
     background: white;
@@ -45,21 +53,25 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
+/* Heading styling */
 .auth-card h2 {
     text-align: center;
     margin-bottom: 1.2rem;
     color: #0077B6;
 }
 
+/* Form group styling */
 .auth-group {
     margin-bottom: 0.9rem;
 }
 
+/* Label styling */
 .auth-group label {
     font-size: 0.9rem;
     font-weight: 600;
 }
 
+/* Input field styling */
 .auth-input {
     width: 100%;
     padding: 0.55rem;
@@ -68,12 +80,14 @@
     margin-top: 0.2rem;
 }
 
+/* Input focus effect */
 .auth-input:focus {
     outline: none;
     border-color: #00B4D8;
     box-shadow: 0 0 0 2px rgba(0,180,216,0.15);
 }
 
+/* Login button styling */
 .auth-btn {
     width: 100%;
     margin-top: 0.8rem;
@@ -86,10 +100,12 @@
     cursor: pointer;
 }
 
+/* Button hover effect */
 .auth-btn:hover {
     transform: scale(1.02);
 }
 
+/* Error message styling */
 .auth-error {
     background: #ffe5e5;
     color: #c1121f;
@@ -99,6 +115,7 @@
     margin-bottom: 0.6rem;
 }
 
+/* Register link styling */
 .auth-link {
     text-align: center;
     margin-top: 0.9rem;
@@ -107,20 +124,29 @@
 </style>
 
 @code {
+    // Stores username entered by the user
     private string _username = "";
+
+    // Stores password entered by the user
     private string _password = "";
+
+    // Stores error message to display when login fails
     private string _errorMessage = "";
 
+    // Handles login process using AuthService
     private async Task LoginAsync()
     {
+        // Call authentication service to validate credentials
         bool success = await AuthService.LoginAsync(_username, _password);
 
         if (success)
         {
+            // Redirect user to home page after successful login
             NavManager.NavigateTo("/", true);
         }
         else
         {
+            // Show error message if login fails
             _errorMessage = "Invalid username or password!";
         }
     }

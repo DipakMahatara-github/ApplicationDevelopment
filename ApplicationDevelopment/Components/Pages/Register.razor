@@ -4,25 +4,31 @@
 
 <div class="auth-page">
     <div class="auth-card">
+        <!-- Registration page heading -->
         <h2>👤 Register Account</h2>
 
+        <!-- Display success or validation message -->
         @if (!string.IsNullOrEmpty(_message))
         {
             <div class="auth-success">@_message</div>
         }
 
+        <!-- Username input field -->
         <div class="auth-group">
             <label>Username</label>
             <input class="auth-input" @bind="_username" placeholder="Create username" />
         </div>
 
+        <!-- Password input field -->
         <div class="auth-group">
             <label>Password</label>
             <input type="password" class="auth-input" @bind="_password" placeholder="Create password" />
         </div>
 
+        <!-- Register button triggers account creation -->
         <button class="auth-btn" @onclick="RegisterUser">Register</button>
 
+        <!-- Link to login page -->
         <div class="auth-link">
             Already have an account?
             <span @onclick="GoToLogin">Login</span>
@@ -31,6 +37,7 @@
 </div>
 
 <style>
+/* Center registration card on the page */
 .auth-page {
     display: flex;
     justify-content: center;
@@ -38,6 +45,7 @@
     min-height: 80vh;
 }
 
+/* Registration card styling */
 .auth-card {
     width: 380px;
     background: #ffffff;
@@ -48,23 +56,27 @@
     animation: fadeIn 0.4s ease-in-out;
 }
 
+/* Heading styling */
 .auth-card h2 {
     margin-bottom: 1.2rem;
     color: #0077B6;
     font-weight: 700;
 }
 
+/* Form group styling */
 .auth-group {
     text-align: left;
     margin-bottom: 1rem;
 }
 
+/* Label styling */
 .auth-group label {
     font-weight: 600;
     font-size: 0.95rem;
     color: #023E8A;
 }
 
+/* Input field styling */
 .auth-input {
     width: 100%;
     padding: 0.6rem 0.75rem;
@@ -75,12 +87,14 @@
     transition: 0.2s;
 }
 
+/* Input focus effect */
 .auth-input:focus {
     outline: none;
     border-color: #00B4D8;
     box-shadow: 0 0 0 2px rgba(0,180,216,0.15);
 }
 
+/* Register button styling */
 .auth-btn {
     width: 100%;
     margin-top: 0.8rem;
@@ -95,11 +109,13 @@
     transition: 0.2s;
 }
 
+/* Button hover effect */
 .auth-btn:hover {
     transform: scale(1.02);
     background: linear-gradient(120deg, #0096C7, #00B4D8);
 }
 
+/* Login link styling */
 .auth-link {
     margin-top: 1rem;
     font-size: 0.95rem;
@@ -116,6 +132,7 @@
     text-decoration: underline;
 }
 
+/* Success message styling */
 .auth-success {
     background: #e6fffa;
     color: #065f46;
@@ -125,6 +142,7 @@
     font-size: 0.9rem;
 }
 
+/* Simple fade-in animation for better UX */
 @@keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -132,25 +150,37 @@
 </style>
 
 @code {
+    // Stores username entered by the user
     private string _username = "";
+
+    // Stores password entered by the user
     private string _password = "";
+
+    // Stores success or validation message
     private string _message = "";
 
+    // Handles user registration logic
     private async Task RegisterUser()
     {
+        // Validate input fields before registration
         if (string.IsNullOrWhiteSpace(_username) || string.IsNullOrWhiteSpace(_password))
         {
             _message = "⚠️ Username and password required!";
             return;
         }
 
+        // Call authentication service to register the user
         await AuthService.RegisterAsync(_username, _password);
         _message = "✅ Account created successfully!";
 
+        // Small delay to show success message before redirecting
         await Task.Delay(800);
+
+        // Redirect user to login page after successful registration
         NavManager.NavigateTo("/login");
     }
 
+    // Navigate directly to login page
     private void GoToLogin()
     {
         NavManager.NavigateTo("/login");

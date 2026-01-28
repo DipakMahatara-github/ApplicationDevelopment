@@ -7,17 +7,21 @@
 
 <div class="calendar-container">
     <div class="calendar-header">
+        <!-- Navigate to previous month -->
         <button @onclick="PrevMonth">◀</button>
         <h3>@_currentMonth.ToString("MMMM yyyy")</h3>
+        <!-- Navigate to next month -->
         <button @onclick="NextMonth">▶</button>
     </div>
 
     <div class="calendar-grid">
+        <!-- Display weekday headers -->
         @foreach (var day in _weekDays)
         {
             <div class="calendar-day-header">@day</div>
         }
 
+        <!-- Render calendar days dynamically -->
         @foreach (var day in _calendarDays)
         {
             var cssClass = HasEntry(day) ? "calendar-day has-entry" : "calendar-day";
@@ -34,6 +38,7 @@
 
 @if (_selectedDate != null)
 {
+    <!-- Display entries for the selected date -->
     <h4>Entries on @_selectedDate.Value.ToString("dd MMM yyyy")</h4>
 
     @if (_selectedEntries.Count == 0)
@@ -46,6 +51,7 @@
         {
             <div class="calendar-entry-card">
                 <p><strong>@entry.PrimaryMood</strong> - @entry.Content</p>
+                <!-- Navigate to edit page for selected entry -->
                 <button @onclick="() => GoToEdit(entry.Id)">Edit</button>
             </div>
         }
@@ -53,6 +59,7 @@
 }
 
 <style>
+/* Calendar layout and styling (unchanged) */
 .calendar-container {
     max-width: 700px;
     margin: 1rem auto;
@@ -111,14 +118,25 @@
 </style>
 
 @code {
+    // Tracks the currently displayed month in the calendar
     private DateTime _currentMonth = DateTime.Today;
+
+    // Stores all calendar days including empty slots for alignment
     private List<DateTime?> _calendarDays = new();
+
+    // Weekday labels for calendar header
     private readonly string[] _weekDays = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
+    // Currently selected date by the user
     private DateTime? _selectedDate;
+
+    // Stores all journal entries loaded from database
     private List<JournalEntry> _allEntries = new();
+
+    // Stores entries corresponding to the selected date
     private List<JournalEntry> _selectedEntries = new();
 
+    // Load journal entries and initialize calendar on page load
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.IsLoggedIn())
@@ -131,6 +149,7 @@
         BuildCalendar();
     }
 
+    // Builds the calendar grid for the current month
     private void BuildCalendar()
     {
         _calendarDays.Clear();
@@ -139,19 +158,23 @@
         int startDay = (int)firstDay.DayOfWeek;
         int daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
 
+        // Add empty slots before the first day of the month
         for (int i = 0; i < startDay; i++)
             _calendarDays.Add(null);
 
+        // Add all actual days of the month
         for (int day = 1; day <= daysInMonth; day++)
             _calendarDays.Add(new DateTime(_currentMonth.Year, _currentMonth.Month, day));
     }
 
+    // Checks whether a specific date has any journal entry
     private bool HasEntry(DateTime? date)
     {
         if (date == null) return false;
         return _allEntries.Any(e => e.CreatedAt.Date == date.Value.Date);
     }
 
+    // Handles date selection and loads entries for that date
     private void SelectDate(DateTime? date)
     {
         if (date == null) return;
@@ -162,18 +185,21 @@
             .ToList();
     }
 
+    // Navigate to previous month and rebuild calendar
     private void PrevMonth()
     {
         _currentMonth = _currentMonth.AddMonths(-1);
         BuildCalendar();
     }
 
+    // Navigate to next month and rebuild calendar
     private void NextMonth()
     {
         _currentMonth = _currentMonth.AddMonths(1);
         BuildCalendar();
     }
 
+    // Navigate to edit page for selected journal entry
     private void GoToEdit(Guid id)
     {
         NavManager.NavigateTo($"/edit-entry/{id}");

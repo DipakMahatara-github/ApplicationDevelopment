@@ -2,10 +2,12 @@
 @implements IDisposable
 
 <div class="vertical-navbar">
+    <!-- Application title in sidebar -->
     <h4 class="nav-title">My Journal</h4>
 
     @if (_isLoggedIn)
     {
+        <!-- Navigation links available only for authenticated users -->
         <NavLink href="/add-entry" class="nav-link" ActiveClass="active">Add Entry</NavLink>
         <NavLink href="/history" class="nav-link" ActiveClass="active">History</NavLink>
         <NavLink href="/calendar" class="nav-link" ActiveClass="active">Calendar</NavLink>
@@ -13,41 +15,49 @@
     }
     else
     {
+        <!-- Locked links shown when user is not logged in -->
         <div class="nav-link locked-link">🔒 Add Entry</div>
         <div class="nav-link locked-link">🔒 History</div>
         <div class="nav-link locked-link">🔒 Calendar</div>
         <div class="nav-link locked-link">🔒 Dashboard</div>
     }
 
+    <!-- Authentication-related navigation links -->
     <NavLink href="/login" class="nav-link">Login</NavLink>
     <NavLink href="/register" class="nav-link">Register</NavLink>
 
     @if (_isLoggedIn)
     {
+        <!-- Logout button visible only when user is logged in -->
         <button class="logout-btn" @onclick="Logout">Logout</button>
     }
 </div>
 
 @code {
+    // Tracks whether the user is currently logged in
     private bool _isLoggedIn;
 
+    // Initialize authentication state and subscribe to auth change events
     protected override void OnInitialized()
     {
         _isLoggedIn = AuthService.IsLoggedIn();
         AuthService.OnAuthStateChanged += Refresh;
     }
 
+    // Refresh UI when authentication state changes
     private void Refresh()
     {
         _isLoggedIn = AuthService.IsLoggedIn();
         InvokeAsync(StateHasChanged);
     }
 
+    // Logs out the user using authentication service
     private void Logout()
     {
         AuthService.Logout();
     }
 
+    // Unsubscribe from authentication events to prevent memory leaks
     public void Dispose()
     {
         AuthService.OnAuthStateChanged -= Refresh;

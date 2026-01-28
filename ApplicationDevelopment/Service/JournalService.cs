@@ -3,16 +3,20 @@ using SQLite;
 
 namespace ApplicationDevelopment.Service
 {
+    // Service layer responsible for database operations related to JournalEntry
     public class JournalService
     {
+        // SQLite database connection (shared across the app)
         private static SQLiteAsyncConnection? _db;
 
+        // Initialize database connection and ensure required tables/columns exist
         private static async Task Init()
         {
-            if (_db != null) return;
+            if (_db != null) return; // Prevent multiple initializations
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "journal.db3");
 
+            // Create database file if it does not exist
             if (!File.Exists(dbPath))
             {
                 File.Create(dbPath).Close();
@@ -20,12 +24,15 @@ namespace ApplicationDevelopment.Service
 
             _db = new SQLiteAsyncConnection(dbPath);
 
+            // Create JournalEntry table if not already created
             await _db.CreateTableAsync<JournalEntry>();
 
+            // Ensure required columns exist (for backward compatibility)
             await EnsureMoodCategoryColumn();
             await EnsureTitleColumn();
         }
 
+        // Ensures the MoodCategory column exists in the database table
         private static async Task EnsureMoodCategoryColumn()
         {
             var columns = await _db!.GetTableInfoAsync("JournalEntry");
@@ -36,6 +43,7 @@ namespace ApplicationDevelopment.Service
             }
         }
 
+        // Ensures the Title column exists in the database table
         private static async Task EnsureTitleColumn()
         {
             var columns = await _db!.GetTableInfoAsync("JournalEntry");
@@ -46,6 +54,7 @@ namespace ApplicationDevelopment.Service
             }
         }
 
+        // Retrieves all journal entries sorted by date (latest first)
         public static async Task<List<JournalEntry>> GetAllEntriesAsync()
         {
             await Init();
@@ -54,6 +63,7 @@ namespace ApplicationDevelopment.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
+            // Load tags and compute mood category for each entry
             foreach (var e in entries)
             {
                 e.LoadTags();
@@ -63,7 +73,7 @@ namespace ApplicationDevelopment.Service
             return entries;
         }
 
-        // ✅ FIXED: Get today's entry (SQLite-safe)
+        // Retrieves today's journal entry (if any)
         public static async Task<JournalEntry?> GetTodayEntryAsync()
         {
             await Init();
@@ -84,18 +94,20 @@ namespace ApplicationDevelopment.Service
             return entry;
         }
 
-        // ✅ Add entry (only one per day)
+        // Adds a new journal entry (restricted to one entry per day)
         public static async Task<bool> AddEntryAsync(JournalEntry entry)
         {
             await Init();
 
             var todayEntry = await GetTodayEntryAsync();
 
+            // Prevent multiple entries on the same day
             if (todayEntry != null)
             {
-                return false; // ❌ already exists today
+                return false;
             }
 
+            // Synchronize tags and assign mood category before saving
             entry.SyncTags();
             entry.SetMoodCategory();
 
@@ -103,6 +115,7 @@ namespace ApplicationDevelopment.Service
             return true;
         }
 
+        // Updates an existing journal entry in the database
         public static async Task UpdateEntryAsync(JournalEntry entry)
         {
             await Init();
@@ -113,6 +126,7 @@ namespace ApplicationDevelopment.Service
             await _db!.UpdateAsync(entry);
         }
 
+        // Deletes a journal entry by its unique ID
         public static async Task DeleteEntryAsync(Guid id)
         {
             await Init();
@@ -122,6 +136,7 @@ namespace ApplicationDevelopment.Service
                 await _db!.DeleteAsync(entry);
         }
 
+        // Retrieves a specific journal entry using its ID
         public static async Task<JournalEntry?> GetEntryByIdAsync(Guid id)
         {
             await Init();

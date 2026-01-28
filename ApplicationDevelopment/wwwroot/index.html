@@ -1,34 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Basic metadata and responsive configuration -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!-- Application title -->
     <title>ApplicationDevelopment</title>
+
+    <!-- Base URL for routing in Blazor -->
     <base href="/" />
+
+    <!-- Bootstrap CSS for UI styling -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Custom application styles -->
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="ApplicationDevelopment.styles.css" />
+
+    <!-- Favicon -->
     <link rel="icon" href="data:,">
 </head>
 
 <body>
 
+<!-- Safe area for mobile devices -->
 <div class="status-bar-safe-area"></div>
 
+<!-- Root container for Blazor application -->
 <div id="app">Loading...</div>
 
+<!-- Blazor error UI for unhandled exceptions -->
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
 
-<!-- ✅ CHART.JS -->
+<!-- Chart.js library for rendering dashboard charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     // ================================
-    // ✅ MOOD DISTRIBUTION CHART
+    // Mood Distribution Chart (Bar Chart)
+    // Visualizes frequency of different moods
     // ================================
     window.renderMoodChart = (labels, values) => {
         const ctx = document.getElementById('moodChart');
@@ -52,7 +67,8 @@
     };
 
     // ================================
-    // ✅ MOOD CATEGORY CHART
+    // Mood Category Chart (Pie Chart)
+    // Shows distribution of Positive, Neutral, Negative moods
     // ================================
     window.renderMoodCategoryChart = (labels, values) => {
         const ctx = document.getElementById('moodCategoryChart');
@@ -79,7 +95,8 @@
     };
 
     // ================================
-    // ✅ ENTRIES OVER TIME CHART
+    // Entries Over Time Chart (Line Chart)
+    // Displays journal activity trend over time
     // ================================
     window.renderEntryChart = (labels, values) => {
         const ctx = document.getElementById('entryChart');
@@ -105,7 +122,8 @@
     };
 
     // ================================
-    // ✅ MOST USED TAGS CHART
+    // Most Used Tags Chart (Pie Chart)
+    // Shows frequency of tags used in journal entries
     // ================================
     window.renderTagChart = (labels, values) => {
         const ctx = document.getElementById('tagChart');
@@ -135,7 +153,8 @@
     };
 
     // ================================
-    // ✅ TAG BREAKDOWN CHART (%)
+    // Tag Breakdown Chart (Doughnut Chart)
+    // Shows percentage contribution of each tag
     // ================================
     window.renderTagBreakdownChart = (labels, values) => {
         const ctx = document.getElementById('tagBreakdownChart');
@@ -165,6 +184,7 @@
                 plugins: {
                     tooltip: {
                         callbacks: {
+                            // Display percentage values in tooltip
                             label: function(context) {
                                 return context.label + ": " + context.raw + "%";
                             }
@@ -176,7 +196,8 @@
     };
 
     // ================================
-    // ✅ WORD COUNT TREND CHART
+    // Word Count Trend Chart (Line Chart)
+    // Shows writing activity based on word count per day
     // ================================
     window.renderWordChart = (labels, values) => {
         const ctx = document.getElementById('wordChart');
@@ -204,10 +225,12 @@
 </script>
 
 <!-- ================================
-     ✅ THEME MANAGER (UNCHANGED)
+     Theme Manager Script
+     Handles light/dark theme switching and persistence
 ================================ -->
 <script>
     window.themeManager = {
+        // Toggle between light and dark theme
         toggleTheme: function () {
             document.body.classList.toggle("dark-theme");
 
@@ -220,10 +243,12 @@
             }
         },
 
+        // Check if dark mode is currently enabled
         isDarkMode: function () {
             return document.body.classList.contains("dark-theme");
         },
 
+        // Load saved theme from local storage on app startup
         loadTheme: function () {
             const savedTheme = localStorage.getItem("theme");
             if (savedTheme === "dark") {
@@ -232,9 +257,11 @@
         }
     };
 
+    // Apply saved theme when the application loads
     window.themeManager.loadTheme();
 </script>
 
+<!-- Blazor WebView runtime script -->
 <script src="_framework/blazor.webview.js" autostart="false"></script>
 
 </body>

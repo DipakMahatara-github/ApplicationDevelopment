@@ -20,15 +20,19 @@ else
 
     <h3>📜 Journal History</h3>
 
+    <!-- Filter and search section -->
     <div class="filter-bar">
 
+        <!-- Search by title, content, or tags -->
         <input type="text" class="form-control search-input"
                placeholder="Search title, content or #tags..."
                @bind="_searchText" @bind:event="oninput" />
 
+        <!-- Date range filters -->
         <input type="date" class="form-control" @bind="fromDate" />
         <input type="date" class="form-control" @bind="toDate" />
 
+        <!-- Filter by primary mood -->
         <select class="form-control" @bind="selectedMood">
             <option value="">All Moods</option>
             @foreach (var mood in moodList)
@@ -37,6 +41,7 @@ else
             }
         </select>
 
+        <!-- Filter by mood category -->
         <select class="form-control" @bind="selectedMoodCategory">
             <option value="">All Mood Categories</option>
             <option value="Positive">Positive</option>
@@ -44,6 +49,7 @@ else
             <option value="Negative">Negative</option>
         </select>
 
+        <!-- Filter by tags -->
         <select class="form-control" @bind="selectedTag">
             <option value="">All Tags</option>
             @foreach (var tag in tagList)
@@ -52,10 +58,12 @@ else
             }
         </select>
 
+        <!-- Apply filters button -->
         <button class="btn btn-primary btn-sm" @onclick="ApplyFilters">
             Apply Filters
         </button>
 
+        <!-- Export filtered entries to PDF -->
         <button class="btn btn-success btn-sm" @onclick="ExportPdf">
             📄 Export PDF
         </button>
@@ -75,20 +83,25 @@ else
                 <div class="card history-card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
+                            <!-- Display entry creation date and time -->
                             <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
                             <div>
+                                <!-- Edit existing journal entry -->
                                 <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => Edit(item.Id)">Edit</button>
+                                <!-- Delete journal entry -->
                                 <button class="btn btn-sm btn-outline-danger" @onclick="() => Delete(item.Id)">Delete</button>
                             </div>
                         </div>
 
-                        <!-- ✅ TITLE -->
+                        <!-- Entry title -->
                         <h5 class="fw-bold mt-2">@item.Title</h5>
 
+                        <!-- Render journal content with Markdown support -->
                         <div class="mt-2 lead">
                             @((MarkupString)Markdown.ToHtml(item.Content ?? ""))
                         </div>
 
+                        <!-- Display moods (primary and secondary) -->
                         <p class="mb-2">
                             <strong>Mood:</strong>
                             @item.PrimaryMood
@@ -96,10 +109,12 @@ else
                             @(string.IsNullOrEmpty(item.SecondaryMood2) ? "" : " / " + item.SecondaryMood2)
                         </p>
 
+                        <!-- Display mood category -->
                         <p class="mb-2">
                             <strong>Mood Category:</strong> @item.MoodCategory
                         </p>
 
+                        <!-- Display tags associated with the entry -->
                         <div>
                             @foreach (var t in item.Tags)
                             {
@@ -111,6 +126,7 @@ else
             }
         </div>
 
+        <!-- Pagination controls -->
         <div class="d-flex justify-content-center align-items-center mt-3">
             <button class="btn btn-sm btn-outline-primary me-2"
                     disabled="@(_currentPage == 1)"
@@ -133,6 +149,7 @@ else
 }
 
 <style>
+/* Page layout and styling (unchanged) */
 .history-container {
     background-color: #E6F2FF;
     min-height: 100vh;
@@ -172,25 +189,33 @@ else
 </style>
 
 @code {
+    // Flags to control authentication and loading state
     private bool isChecking = true;
     private bool isAllowed = false;
 
+    // Search input text
     private string _searchText = "";
+
+    // Stores all journal entries from database
     private List<JournalEntry> _entries = new();
 
+    // Filter variables
     private DateTime? fromDate;
     private DateTime? toDate;
     private string selectedMood = "";
     private string selectedTag = "";
     private string selectedMoodCategory = "";
 
+    // Lists used to populate filter dropdowns
     private List<string> moodList = new();
     private List<string> tagList = new();
 
+    // Pagination variables
     private int _currentPage = 1;
     private int _pageSize = 5;
     private int _totalPages = 1;
 
+    // Load entries and initialize filters when page loads
     protected override async Task OnInitializedAsync()
     {
         isAllowed = AuthService.IsLoggedIn();
@@ -207,11 +232,13 @@ else
         foreach (var e in _entries)
             e.LoadTags();
 
+        // Build mood filter list
         moodList = _entries.Select(e => e.PrimaryMood)
             .Where(m => !string.IsNullOrEmpty(m))
             .Distinct()
             .ToList();
 
+        // Build tag filter list
         tagList = _entries.SelectMany(e => e.Tags)
             .Distinct()
             .ToList();
@@ -219,16 +246,19 @@ else
         CalculatePages();
     }
 
+    // Apply filters and reset pagination
     private void ApplyFilters()
     {
         _currentPage = 1;
         CalculatePages();
     }
 
+    // Returns filtered and paginated list of journal entries
     private List<JournalEntry> GetFilteredEntries()
     {
         IEnumerable<JournalEntry> filtered = _entries;
 
+        // Search filter: title, content, and tags
         if (!string.IsNullOrWhiteSpace(_searchText))
         {
             filtered = filtered.Where(x =>
@@ -238,23 +268,28 @@ else
             );
         }
 
+        // Date range filtering
         if (fromDate != null)
             filtered = filtered.Where(x => x.CreatedAt.Date >= fromDate.Value.Date);
 
         if (toDate != null)
             filtered = filtered.Where(x => x.CreatedAt.Date <= toDate.Value.Date);
 
+        // Mood filtering
         if (!string.IsNullOrEmpty(selectedMood))
             filtered = filtered.Where(x => x.PrimaryMood == selectedMood);
 
+        // Mood category filtering
         if (!string.IsNullOrEmpty(selectedMoodCategory))
             filtered = filtered.Where(x => x.MoodCategory == selectedMoodCategory);
 
+        // Tag filtering
         if (!string.IsNullOrEmpty(selectedTag))
             filtered = filtered.Where(x => x.Tags.Contains(selectedTag));
 
         var list = filtered.ToList();
 
+        // Calculate total pages based on filtered results
         _totalPages = (int)Math.Ceiling(list.Count / (double)_pageSize);
         if (_totalPages == 0) _totalPages = 1;
 
@@ -264,29 +299,34 @@ else
             .ToList();
     }
 
+    // Calculate total pages based on all entries
     private void CalculatePages()
     {
         _totalPages = (int)Math.Ceiling(_entries.Count / (double)_pageSize);
         if (_totalPages == 0) _totalPages = 1;
     }
 
+    // Move to next page
     private void NextPage()
     {
         if (_currentPage < _totalPages)
             _currentPage++;
     }
 
+    // Move to previous page
     private void PrevPage()
     {
         if (_currentPage > 1)
             _currentPage--;
     }
 
+    // Navigate to edit page for selected entry
     private void Edit(Guid id)
     {
         NavManager.NavigateTo($"/edit-entry/{id}");
     }
 
+    // Delete an entry and reload data
     private async Task Delete(Guid id)
     {
         await JournalService.DeleteEntryAsync(id);
@@ -298,6 +338,7 @@ else
         CalculatePages();
     }
 
+    // Export filtered journal entries to PDF
     private async Task ExportPdf()
     {
         try

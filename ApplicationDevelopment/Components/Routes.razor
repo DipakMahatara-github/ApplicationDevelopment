@@ -4,12 +4,15 @@
 <Router AppAssembly="@typeof(Routes).Assembly">
     <Found Context="routeData">
 
+        <!-- Check if the page is protected and user is not logged in -->
         @if (IsProtected(routeData.PageType) && !AuthService.IsLoggedIn())
         {
+            <!-- Redirect unauthenticated users to login page -->
             NavManager.NavigateTo("/login", true);
         }
         else
         {
+            <!-- Render the requested page using the main layout -->
             <RouteView RouteData="@routeData"
                        DefaultLayout="typeof(ApplicationDevelopment.Components.Layout.MainLayout)" />
         }
@@ -17,6 +20,7 @@
     </Found>
 
     <NotFound>
+        <!-- Display custom 404 page using main layout -->
         <LayoutView Layout="typeof(ApplicationDevelopment.Components.Layout.MainLayout)">
             <h3>Page not found</h3>
         </LayoutView>
@@ -24,15 +28,19 @@
 </Router>
 
 @code {
+    // Determines whether a page requires authentication
     private bool IsProtected(Type pageType)
     {
         return pageType.Name switch
         {
+            // Pages accessible only after login
             "AddEntry" => true,
             "History" => true,
             "EditEntry" => true,
             "Calendar" => true, 
             "Dashboard" => true,
+
+            // All other pages are public
             _ => false
         };
     }

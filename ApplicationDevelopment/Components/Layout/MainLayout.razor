@@ -4,11 +4,13 @@
 @implements IDisposable
 
 <div class="app-container">
+    <!-- Vertical navigation sidebar -->
     <div class="vertical-navbar">
         <h4 class="nav-title">My Journal</h4>
 
         @if (_isLoggedIn)
         {
+            <!-- Navigation links available only when user is logged in -->
             <NavLink href="/add-entry" class="nav-link" ActiveClass="active">Add Entry</NavLink>
             <NavLink href="/history" class="nav-link" ActiveClass="active">History</NavLink>
             <NavLink href="/calendar" class="nav-link" ActiveClass="active">Calendar</NavLink>
@@ -16,24 +18,27 @@
         }
         else
         {
+            <!-- Locked navigation links for unauthenticated users -->
             <div class="nav-link locked-link">🔒 Add Entry</div>
             <div class="nav-link locked-link">🔒 History</div>
             <div class="nav-link locked-link">🔒 Calendar</div>
             <div class="nav-link locked-link">🔒 Dashboard</div>
         }
 
+        <!-- Authentication navigation -->
         <NavLink href="/login" class="nav-link">Login</NavLink>
         <NavLink href="/register" class="nav-link">Register</NavLink>
 
         @if (_isLoggedIn)
         {
+            <!-- Logout button visible only when user is logged in -->
             <button class="logout-btn" @onclick="Logout">Logout</button>
         }
     </div>
 
     <div class="main-content">
 
-        <!-- 🌙 TOP RIGHT THEME TOGGLE -->
+        <!-- Theme toggle section (light/dark mode) -->
         <div class="theme-topbar">
             <span class="theme-status">@_modeStatus</span>
 
@@ -47,13 +52,16 @@
             </div>
         </div>
 
+        <!-- Render page content here -->
         @Body
     </div>
 </div>
 
 <style>
+/* Application layout container */
 .app-container { display:flex; min-height:100vh; }
 
+/* Sidebar navigation styling */
 .vertical-navbar {
     width:220px;
     background: var(--nav-bg);
@@ -66,6 +74,7 @@
     top:0; left:0; bottom:0;
 }
 
+/* Sidebar title styling */
 .nav-title {
     color:#fff;
     font-size:1.5rem;
@@ -73,6 +82,7 @@
     margin-bottom:2rem;
 }
 
+/* Navigation link styling */
 .nav-link {
     color:#fff;
     font-weight:600;
@@ -86,22 +96,26 @@
     transition:.3s;
 }
 
+/* Hover effect for navigation links */
 .nav-link:hover {
     background:rgba(255,255,255,.2);
     transform:scale(1.05);
 }
 
+/* Active navigation link styling */
 .nav-link.active {
     background:rgba(255,255,255,.4);
     color:#023E8A;
 }
 
+/* Locked navigation link styling */
 .locked-link {
     opacity:0.4;
     cursor:not-allowed;
     pointer-events:none;
 }
 
+/* Logout button styling */
 .logout-btn {
     margin-top:1rem;
     background:#fff;
@@ -111,6 +125,7 @@
     cursor:pointer;
 }
 
+/* Main content area styling */
 .main-content {
     margin-left:220px;
     padding:2rem;
@@ -120,8 +135,7 @@
     color: var(--text-color);
 }
 
-/* 🌙 THEME TOGGLE UI (NEW - DOES NOT BREAK YOUR CSS) */
-
+/* Theme toggle UI styling */
 .theme-topbar {
     display:flex;
     justify-content:flex-end;
@@ -184,25 +198,30 @@
     transform:translateX(20px);
 }
 
+/* Dark mode styling for toggle switch */
 body.dark-theme .switch {
     background:#00B4D8;
 }
 </style>
 
 @code {
+    // Tracks whether the user is logged in
     private bool _isLoggedIn;
 
+    // Theme-related state variables
     private bool _isDarkMode = false;
     private string _themeText = "Light Mode";
     private string _themeIcon = "☀️";
     private string _modeStatus = "Dark Mode OFF";
 
+    // Initialize authentication state and subscribe to auth state changes
     protected override void OnInitialized()
     {
         _isLoggedIn = AuthService.IsLoggedIn();
         AuthService.OnAuthStateChanged += Refresh;
     }
 
+    // Check and load theme state after the component is rendered
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -213,18 +232,21 @@ body.dark-theme .switch {
         }
     }
 
+    // Refresh UI when authentication state changes
     private void Refresh()
     {
         _isLoggedIn = AuthService.IsLoggedIn();
         InvokeAsync(StateHasChanged);
     }
 
+    // Toggle between light and dark theme using JavaScript interop
     private async Task ToggleTheme()
     {
         _isDarkMode = await JS.InvokeAsync<bool>("themeManager.toggleTheme");
         UpdateThemeUI();
     }
 
+    // Update UI text and icons based on current theme
     private void UpdateThemeUI()
     {
         if (_isDarkMode)
@@ -241,11 +263,13 @@ body.dark-theme .switch {
         }
     }
 
+    // Log out the user and update authentication state
     private void Logout()
     {
         AuthService.Logout();
     }
 
+    // Unsubscribe from authentication event to avoid memory leaks
     public void Dispose()
     {
         AuthService.OnAuthStateChanged -= Refresh;

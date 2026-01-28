@@ -8,7 +8,7 @@
 
 <div class="dashboard-container">
 
-    <!-- FILTERS -->
+    <!-- Filter section for date, mood, and category -->
     <div class="filter-row">
         <div>
             <label>From:</label>
@@ -39,10 +39,11 @@
             </select>
         </div>
 
+        <!-- Apply selected filters -->
         <button class="btn-filter" @onclick="ApplyFilters">Apply</button>
     </div>
 
-    <!-- TOP STATS -->
+    <!-- Top-level statistics summary -->
     <div class="stats-grid">
         <div class="stat-card">
             <h4>Total Entries</h4>
@@ -70,6 +71,7 @@
         </div>
     </div>
 
+    <!-- Streak and activity statistics -->
     <div class="stats-grid">
         <div class="stat-card">
             <h4>🔥 Current Streak</h4>
@@ -87,7 +89,7 @@
         </div>
     </div>
 
-    <!-- CHARTS -->
+    <!-- Data visualization charts -->
     <div class="charts-grid">
         <div class="chart-card big-chart">
             <h4>Mood Distribution</h4>
@@ -109,7 +111,7 @@
             <canvas id="tagChart"></canvas>
         </div>
 
-        <!-- ✅ NEW TAG BREAKDOWN CHART -->
+        <!-- Tag contribution percentage chart -->
         <div class="chart-card big-chart">
             <h4>Tag Breakdown (%)</h4>
             <canvas id="tagBreakdownChart"></canvas>
@@ -121,6 +123,7 @@
         </div>
     </div>
 
+    <!-- Insight section -->
     <div class="insight-card">
         <h4>📅 Most Active Day</h4>
         <p>@mostActiveDay</p>
@@ -129,7 +132,7 @@
 </div>
 
 <style>
-/* ✅ YOUR CSS (UNCHANGED) */
+/* Dashboard layout and styling (unchanged) */
 .dashboard-container {
     max-width: 1100px;
     margin: 1rem auto;
@@ -212,9 +215,11 @@
 </style>
 
 @code {
+    // Stores all journal entries and filtered results
     private List<JournalEntry> entries = new();
     private List<JournalEntry> filteredEntries = new();
 
+    // Dashboard statistics variables
     private int totalEntries;
     private string mostCommonMood = "None";
     private int currentStreak;
@@ -226,12 +231,14 @@
     private int neutralCount;
     private int negativeCount;
 
+    // Filter parameters
     private DateTime? fromDate;
     private DateTime? toDate;
     private string selectedMood = "";
     private string selectedMoodCategory = "";
     private List<string> moodList = new();
 
+    // Load data and initialize dashboard
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.IsLoggedIn())
@@ -242,11 +249,13 @@
 
         entries = await JournalService.GetAllEntriesAsync();
 
+        // Load tag data for each entry
         foreach (var e in entries)
             e.LoadTags();
 
         filteredEntries = entries;
 
+        // Build mood dropdown list
         moodList = entries.Select(e => e.PrimaryMood)
                           .Where(m => !string.IsNullOrEmpty(m))
                           .Distinct()
@@ -256,6 +265,7 @@
         await RenderCharts();
     }
 
+    // Apply filters and refresh dashboard data
     private void ApplyFilters()
     {
         filteredEntries = entries;
@@ -276,6 +286,7 @@
         RenderCharts();
     }
 
+    // Calculate summary statistics for dashboard
     private void CalculateStats()
     {
         totalEntries = filteredEntries.Count;
@@ -305,6 +316,7 @@
         }
     }
 
+    // Calculate current and longest writing streaks
     private void CalculateStreaks()
     {
         var dates = filteredEntries.Select(e => e.CreatedAt.Date).Distinct().OrderBy(d => d).ToList();
@@ -326,6 +338,7 @@
         currentStreak = dates.LastOrDefault() == DateTime.Today ? streak : 0;
     }
 
+    // Calculate number of missed days between first entry and today
     private void CalculateMissedDays()
     {
         var dates = filteredEntries.Select(e => e.CreatedAt.Date).Distinct().OrderBy(d => d).ToList();
@@ -337,6 +350,7 @@
         if (missedDays < 0) missedDays = 0;
     }
 
+    // Identify the most active day based on number of entries
     private void CalculateMostActiveDay()
     {
         var day = filteredEntries.GroupBy(e => e.CreatedAt.Date)
@@ -347,6 +361,7 @@
             mostActiveDay = $"{day.Key:dd MMM yyyy} ({day.Count()} entries)";
     }
 
+    // Prepare chart data and send it to JavaScript for rendering
     private async Task RenderCharts()
     {
         var moodGroups = filteredEntries.GroupBy(e => e.PrimaryMood)
@@ -372,7 +387,7 @@
         var tagLabels = tagGroups.Select(t => t.Tag).ToArray();
         var tagValues = tagGroups.Select(t => t.Count).ToArray();
 
-        // ✅ TAG BREAKDOWN (%)
+        // Calculate tag contribution percentages
         var totalTags = filteredEntries.SelectMany(e => e.Tags).Count();
 
         var tagBreakdownGroups = filteredEntries.SelectMany(e => e.Tags)
